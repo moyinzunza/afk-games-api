@@ -13,6 +13,7 @@ class CreatePersonalAccessTokensTable extends Migration
      */
     public function up()
     {
+        DB::statement('SET SESSION sql_require_primary_key=0');
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
             $table->morphs('tokenable');

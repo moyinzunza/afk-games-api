@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ResourcesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/api/v1/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
+Route::get('/api/v1/get_resources/{user_id}', [ResourcesController::class, 'get_resources'])->name('get_resources');
