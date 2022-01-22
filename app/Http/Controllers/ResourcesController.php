@@ -52,16 +52,16 @@ class ResourcesController extends Controller
 
         foreach ($modules as $module) {
 
-            $module_info = array([
+            $module_info = array(
                 'id' => $module->id,
                 'name' => $module->name,
-                'resources' => array([
+                'resources' => array(
                     'resources_1' => $module->resources_1,
                     'resources_2' => $module->resources_2,
                     'resources_3' => $module->resources_3,
                     'resources_4' => $module->resources_4,
-                ])
-            ]);
+                )
+            );
 
             array_push($modules_arr, $module_info);
         }
