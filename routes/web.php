@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\AccountApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +19,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Resources Api
 Route::get('/api/v1/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
-Route::get('/api/v1/get_resources/{user_id}', [ResourcesController::class, 'get_resources'])->name('get_resources');
+Route::get('/api/v1/get_user_resources/{user_id}', [ResourcesController::class, 'get_user_resources'])->name('get_user_resources');
+Route::get('/api/v1/get_module_resources/{module_id}', [ResourcesController::class, 'get_module_resources'])->name('get_module_resources');
+Route::get('/api/v1/get_module_lvl_resources/{module_id}', [ResourcesController::class, 'get_module_lvl_resources'])->name('get_module_lvl_resources');
+
+
+//Account Api
+Route::post('/api/v1/login', [AccountApiController::class, 'login'])->name('login');
+Route::post('/api/v1/signin', [AccountApiController::class, 'signin'])->name('signin');
