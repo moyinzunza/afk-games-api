@@ -9,6 +9,6 @@
 docker-compose.override.yml
 Homestead.json
 Homestead.yaml
-/logs
+access.log
 /.idea
 /.vscode
