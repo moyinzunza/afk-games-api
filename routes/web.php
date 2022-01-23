@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\AccountApiController;
+use App\Http\Controllers\BuildingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,9 @@ Route::get('/api/v1/get_module_lvl_resources/{module_id}', [ResourcesController:
 //Account Api
 Route::post('/api/v1/login', [AccountApiController::class, 'login'])->name('login');
 Route::post('/api/v1/signin', [AccountApiController::class, 'signin'])->name('signin');
+
+
+//Buildings Api
+Route::post('/api/v1/upgrade_resources_building', [BuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
+Route::get('/api/v1/get_resources_buildings_prices', [BuildingsController::class, 'get_resources_buildings_prices'])->name('get_resources_buildings_prices');
+

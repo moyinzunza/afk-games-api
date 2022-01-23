@@ -7,6 +7,7 @@ use App\Models\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 
 class AccountApiController extends Controller
@@ -14,11 +15,16 @@ class AccountApiController extends Controller
     public function login(Request $request)
     {
 
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required'
+        ]);
 
-        if(empty($request->email) || empty($request->password)){
+        if ($validator->fails()) {
 
             $data['status'] = "error";
-            $data['msg'] = "email or password missing";
+            $data['msg'] = "params missing";
+            $data['data'] = $validator->errors();
             return response()->json($data, 200);
 
         }
