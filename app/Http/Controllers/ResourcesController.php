@@ -16,7 +16,7 @@ class ResourcesController extends Controller
         //runs every minute
 
         $users = User::where('status', 'active')->get();
-        $config = Config::first();
+        $generate_resources_buildings_multiplier = json_decode(Config::first()->generate_resources_buildings_multiplier);
 
         foreach ($users as $user) {
 
@@ -25,10 +25,10 @@ class ResourcesController extends Controller
             foreach ($modules as $module) {
 
                 Modules::where('id', $module->id)->update([
-                    'resources_1' => ($module->resources_1 + ($module->resources_building_lvl_1 * $config->resources_building_1_multiplier)),
-                    'resources_2' => ($module->resources_2 + ($module->resources_building_lvl_2 * $config->resources_building_2_multiplier)),
-                    'resources_3' => ($module->resources_3 + ($module->resources_building_lvl_3 * $config->resources_building_3_multiplier)),
-                    'resources_4' => ($module->resources_4 + ($module->resources_building_lvl_4 * $config->resources_building_4_multiplier)),
+                    'resources_1' => ($module->resources_1 + ($module->resources_building_lvl_1 * $generate_resources_buildings_multiplier->generate_resources_1)),
+                    'resources_2' => ($module->resources_2 + ($module->resources_building_lvl_2 * $generate_resources_buildings_multiplier->generate_resources_2)),
+                    'resources_3' => ($module->resources_3 + ($module->resources_building_lvl_3 * $generate_resources_buildings_multiplier->generate_resources_3)),
+                    'resources_4' => ($module->resources_4 + ($module->resources_building_lvl_4 * $generate_resources_buildings_multiplier->generate_resources_4)),
                 ]);
             }
         }

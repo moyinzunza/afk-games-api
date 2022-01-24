@@ -48,7 +48,7 @@ class BuildingsController extends Controller
         }
 
         $next_lvl = $module->{'resources_building_lvl_' . $request->building_id} + 1;
-        $next_lvl_price = $this->get_single_price($request->building_id, $next_lvl);
+        $next_lvl_price = $this->get_single_price_time($request->building_id, $next_lvl);
         $price_resources_1 = $next_lvl_price['resources_1'];
         $price_resources_2 = $next_lvl_price['resources_2'];
         $price_resources_3 = $next_lvl_price['resources_3'];
@@ -74,11 +74,12 @@ class BuildingsController extends Controller
         return response()->json($data, 200);
     }
 
-    public function get_single_price($building_id, $building_level)
+    public function get_single_price_time($building_id, $building_level)
     {
 
         $config = Config::first();
         ${'resources_building_' . $building_id . '_price_multiplier'} = json_decode($config->{'resources_building_' . $building_id . '_price_multiplier'});
+        $resources_building_time_multiplier = json_decode($config->resources_buildings_time_multiplier)->{"time_resources_".$building_id};
 
         $multiplier = $this->fibonacci($building_level);
 
@@ -86,7 +87,8 @@ class BuildingsController extends Controller
             "resources_1" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_1 * $multiplier),
             "resources_2" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_2 * $multiplier),
             "resources_3" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_3 * $multiplier),
-            "resources_4" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_4 * $multiplier)
+            "resources_4" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_4 * $multiplier),
+            "time_minutes" => (int)($resources_building_time_multiplier * $multiplier) 
         );
     }
 
@@ -98,10 +100,10 @@ class BuildingsController extends Controller
 
             $buildings_arr = array(
                 "level_" . $i => [
-                    "building_1" => $this->get_single_price(1, $i),
-                    "building_2" => $this->get_single_price(2, $i),
-                    "building_3" => $this->get_single_price(3, $i),
-                    "building_4" => $this->get_single_price(4, $i),
+                    "building_1" => $this->get_single_price_time(1, $i),
+                    "building_2" => $this->get_single_price_time(2, $i),
+                    "building_3" => $this->get_single_price_time(3, $i),
+                    "building_4" => $this->get_single_price_time(4, $i),
                 ]
             );
 
