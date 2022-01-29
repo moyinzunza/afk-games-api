@@ -32,7 +32,7 @@ Route::group([
         Route::get('user', [AuthController::class, 'user']);
 
         //Resources Api
-        Route::get('get_user_resources/{user_id}', [ResourcesController::class, 'get_user_resources']);
+        Route::get('get_user_resources', [ResourcesController::class, 'get_user_resources']);
         Route::get('get_module_resources/{module_id}', [ResourcesController::class, 'get_module_resources']);
         Route::get('get_module_lvl_resources/{module_id}', [ResourcesController::class, 'get_module_lvl_resources']);
 

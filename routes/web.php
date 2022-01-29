@@ -21,7 +21,7 @@ Route::get('/', function () {
 });
 
 //Resources Api
-Route::get('/api/v1/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
+Route::get('/cron/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
 
 //Buildings Api
 Route::post('/api/v1/upgrade_resources_building', [BuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
