@@ -18,10 +18,11 @@ use App\Http\Controllers\BuildingsController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('login');
 
-//Resources Api
+//Resources Api Cron
 Route::get('/cron/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
+
 
 //Buildings Api
 Route::post('/api/v1/upgrade_resources_building', [BuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');

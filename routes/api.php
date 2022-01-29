@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\HandshakeController;
 use App\Http\Controllers\ResourcesController;
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::group([
     Route::group([
       'middleware' => 'auth:api'
     ], function() {
+        //handshake
+        Route::post('handshake', [HandshakeController::class, 'handshake']);
+
+        //user managment
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
 
