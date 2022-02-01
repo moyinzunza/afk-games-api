@@ -14,8 +14,6 @@ class HandshakeController extends Controller
     public function handshake(Request $request)
     {
 
-        
-
         $validator = Validator::make($request->all(), [
             'push_notification_token' => 'required|string'
         ]);

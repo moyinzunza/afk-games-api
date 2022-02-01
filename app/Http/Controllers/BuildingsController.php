@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Modules;
-use App\Models\Config;
+use App\Models\ConfigResources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,7 +15,7 @@ class BuildingsController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'building_id' => 'required|integer|between:1,4',
+            'building_id' => 'required|integer|between:1,3',
             'module_id' => 'required',
             'user_id' => 'required',
             'token' => 'required'
@@ -52,13 +52,11 @@ class BuildingsController extends Controller
         $price_resources_1 = $next_lvl_price['resources_1'];
         $price_resources_2 = $next_lvl_price['resources_2'];
         $price_resources_3 = $next_lvl_price['resources_3'];
-        $price_resources_4 = $next_lvl_price['resources_4'];
 
         if (
             $price_resources_1 > $module->resources_1
             || $price_resources_2 > $module->resources_2
             || $price_resources_3 > $module->resources_3
-            || $price_resources_4 > $module->resources_4
         ) {
             $data['module_info'] = $module;
             $data['next_lvl_price'] = $next_lvl_price;
@@ -77,33 +75,31 @@ class BuildingsController extends Controller
     public function get_single_price_time($building_id, $building_level)
     {
 
-        $config = Config::first();
-        ${'resources_building_' . $building_id . '_price_multiplier'} = json_decode($config->{'resources_building_' . $building_id . '_price_multiplier'});
-        $resources_building_time_multiplier = json_decode($config->resources_buildings_time_multiplier)->{"time_resources_".$building_id};
+        $config_resources = ConfigResources::get();
+        $selected_resource = $config_resources[$building_id-1];
 
         $multiplier = $this->fibonacci($building_level);
 
         return array(
-            "resources_1" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_1 * $multiplier),
-            "resources_2" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_2 * $multiplier),
-            "resources_3" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_3 * $multiplier),
-            "resources_4" => (int)(${'resources_building_' . $building_id . '_price_multiplier'}->resources_4 * $multiplier),
-            "time_minutes" => (int)($resources_building_time_multiplier * $multiplier) 
+            $config_resources[0]->name => (int)($selected_resource->resources1_price_multiplier * $multiplier),
+            $config_resources[1]->name => (int)($selected_resource->resources1_price_multiplier * $multiplier),
+            $config_resources[2]->name => (int)($selected_resource->resources1_price_multiplier * $multiplier),
+            "time_minutes" => (int)($selected_resource->time_multiplier * $multiplier) 
         );
     }
 
     public function get_resources_buildings_prices()
     {
+        $config_resources = ConfigResources::get();
         $prices_arr = array();
 
         for ($i = 1; $i <= 30; $i++) {
 
             $buildings_arr = array(
                 "level_" . $i => [
-                    "building_1" => $this->get_single_price_time(1, $i),
-                    "building_2" => $this->get_single_price_time(2, $i),
-                    "building_3" => $this->get_single_price_time(3, $i),
-                    "building_4" => $this->get_single_price_time(4, $i),
+                    $config_resources[0]->name."_building" => $this->get_single_price_time(1, $i),
+                    $config_resources[1]->name."_building" => $this->get_single_price_time(2, $i),
+                    $config_resources[2]->name."_building" => $this->get_single_price_time(3, $i)
                 ]
             );
 

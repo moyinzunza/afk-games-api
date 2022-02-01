@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Modules;
-use App\Models\Config;
+use App\Models\ConfigResources;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class ResourcesController extends Controller
         //runs every minute
 
         $users = User::where('status', 'active')->get();
-        $generate_resources_buildings_multiplier = json_decode(Config::first()->generate_resources_buildings_multiplier);
+        $config_resources = json_decode(ConfigResources::get());
 
         foreach ($users as $user) {
 
@@ -26,10 +26,9 @@ class ResourcesController extends Controller
             foreach ($modules as $module) {
 
                 Modules::where('id', $module->id)->update([
-                    'resources_1' => ($module->resources_1 + ($module->resources_building_lvl_1 * $generate_resources_buildings_multiplier->generate_resources_1)),
-                    'resources_2' => ($module->resources_2 + ($module->resources_building_lvl_2 * $generate_resources_buildings_multiplier->generate_resources_2)),
-                    'resources_3' => ($module->resources_3 + ($module->resources_building_lvl_3 * $generate_resources_buildings_multiplier->generate_resources_3)),
-                    'resources_4' => ($module->resources_4 + ($module->resources_building_lvl_4 * $generate_resources_buildings_multiplier->generate_resources_4)),
+                    'resources_1' => ($module->resources_1 + ($module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier)),
+                    'resources_2' => ($module->resources_2 + ($module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier)),
+                    'resources_3' => ($module->resources_3 + ($module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier))
                 ]);
             }
         }
@@ -44,6 +43,7 @@ class ResourcesController extends Controller
     public function get_user_resources()
     {
         $modules = Modules::where('user_id', Auth::id())->get();
+        $config_resources = json_decode(ConfigResources::get());
         $modules_arr = array();
 
         foreach ($modules as $module) {
@@ -52,10 +52,9 @@ class ResourcesController extends Controller
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
-                    'resources_1' => $module->resources_1,
-                    'resources_2' => $module->resources_2,
-                    'resources_3' => $module->resources_3,
-                    'resources_4' => $module->resources_4,
+                    $config_resources[0]->name => $module->resources_1,
+                    $config_resources[1]->name => $module->resources_2,
+                    $config_resources[2]->name => $module->resources_3
                 )
             );
 
@@ -69,7 +68,7 @@ class ResourcesController extends Controller
 
     public function get_module_resources($module_id)
     {
-
+        $config_resources = json_decode(ConfigResources::get());
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         if (!empty($module)) {
 
@@ -77,10 +76,9 @@ class ResourcesController extends Controller
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
-                    'resources_1' => $module->resources_1,
-                    'resources_2' => $module->resources_2,
-                    'resources_3' => $module->resources_3,
-                    'resources_4' => $module->resources_4,
+                    $config_resources[0]->name => $module->resources_1,
+                    $config_resources[1]->name => $module->resources_2,
+                    $config_resources[2]->name => $module->resources_3
                 )
             );
 
@@ -96,19 +94,18 @@ class ResourcesController extends Controller
 
     public function get_module_lvl_resources($module_id)
     {
+        $config_resources = json_decode(ConfigResources::get());
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
 
-        $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         if (!empty($module)) {
 
             $module_info = array(
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
-                    'resources_building_lvl_1' => $module->resources_building_lvl_1,
-                    'resources_building_lvl_2' => $module->resources_building_lvl_2,
-                    'resources_building_lvl_3' => $module->resources_building_lvl_3,
-                    'resources_building_lvl_4' => $module->resources_building_lvl_4,
+                    $config_resources[0]->name.'_building_lvl' => $module->resources_building_lvl_1,
+                    $config_resources[1]->name.'_building_lvl' => $module->resources_building_lvl_2,
+                    $config_resources[2]->name.'_building_lvl' => $module->resources_building_lvl_3
                 )
             );
             $data['status'] = array("statusCode" => 200, "message" => 'resources in module');

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\HandshakeController;
 use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,6 +32,9 @@ Route::group([
     ], function() {
         //handshake
         Route::post('handshake', [HandshakeController::class, 'handshake']);
+
+        //home
+        Route::get('home',[HomeController::class, 'get_home_data']);
 
         //user managment
         Route::get('logout', [AuthController::class, 'logout']);
