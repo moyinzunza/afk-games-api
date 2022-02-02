@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\HandshakeController;
-use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\ResourcesBuildingsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ModulesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,10 +41,12 @@ Route::group([
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
 
-        //Resources Api
-        Route::get('get_user_resources', [ResourcesController::class, 'get_user_resources']);
-        Route::get('get_module_resources/{module_id}', [ResourcesController::class, 'get_module_resources']);
-        Route::get('get_module_lvl_resources/{module_id}', [ResourcesController::class, 'get_module_lvl_resources']);
+        //Modules
+        Route::get('get_modules', [ModulesController::class, 'get_modules']);
+
+        //Resources 
+        Route::get('get_module_resources/{module_id}', [ResourcesBuildingsController::class, 'get_module_resources']);
+        Route::post('upgrade_resources_building', [ResourcesBuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
 
     });
 });

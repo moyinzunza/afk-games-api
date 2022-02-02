@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourcesController;
-use App\Http\Controllers\AccountApiController;
-use App\Http\Controllers\BuildingsController;
+use App\Http\Controllers\ResourcesBuildingsController;
+use App\Http\Controllers\UpgradesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +23,8 @@ Route::get('/', function () {
 //Resources Api Cron
 Route::get('/cron/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
 
+//Upgrade resources buildings Cron
+Route::get('/cron/upgrades_resources_buildings', [UpgradesController::class, 'process_resources_buildings'])->name('process_resources_buildings');
 
-//Buildings Api
-Route::post('/api/v1/upgrade_resources_building', [BuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
-Route::get('/api/v1/get_resources_buildings_prices', [BuildingsController::class, 'get_resources_buildings_prices'])->name('get_resources_buildings_prices');
-
+//Utils Api
+Route::get('/api/v1/get_resources_buildings_prices', [ResourcesBuildingsController::class, 'get_resources_buildings_prices'])->name('get_resources_buildings_prices');
