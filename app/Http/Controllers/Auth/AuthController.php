@@ -16,10 +16,20 @@ class AuthController extends Controller
      */
     public function signUp(Request $request)
     {
+
+        //reward for newuser
+        $reward_new_user = 10000;
+
+        //plus rewards if referred
+        $referred_reward = 5000;
+        $referred_reward_new_user = 5000;
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'username' => 'required|string|unique:users',
+            'referred_by_username' => 'string'
         ]);
 
         if ($validator->fails()) {
@@ -32,10 +42,40 @@ class AuthController extends Controller
             ), 400);
         }
 
+        $uname = preg_replace('/[^A-Za-z0-9\-]/', '', $request->username);;
+        $uname = str_replace(' ', '', $uname);
+        $uname = str_replace('-', '', $uname);
+
+        $check_uname = User::where('username', $uname)->first();
+        if(!empty($check_uname)){
+            return response()->json(array(
+                'status' => array(
+                    'statusCode' => 400,
+                    'message' => 'The given data was invalid.'
+                ),
+                'result' => array('errors' => array('username' => array('The username '.$uname.' has already been taken.')))
+            ), 400);
+        }
+
+        $referred_by_userid = null;
+
+        if(!empty($request->referred_by_username)){
+            $chek_referred = User::where('username', $request->referred_by_username)->first();
+            if(!empty($chek_referred)){
+                $reward_new_user += $referred_reward_new_user;
+                $referred_by_userid = $chek_referred->id;
+                $chek_referred->paid_resource += $referred_reward;
+                $chek_referred->save();
+            }
+        }
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'password' => bcrypt($request->password),
+            'username' => $uname,
+            'referred_by_userid' => $referred_by_userid,
+            'paid_resource' => $reward_new_user
         ]);
 
         return response()->json([
