@@ -71,6 +71,30 @@ class ResourcesBuildingsController extends Controller
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         if (!empty($module)) {
 
+            $building_upgrades_line = UpgradesLine::where('user_id', Auth::id())->where('type', 'resources_building')->where('module_id', $module_id)->get();
+
+            $upgrade_line = array();
+
+            foreach ($building_upgrades_line as $upgrades_line) {
+
+                $init_unix_date = new DateTime($upgrades_line->created_at);
+                $init_unix_date = $init_unix_date->format('U');
+                $end_unix_date = new DateTime($upgrades_line->finish_at);
+                $end_unix_date = $end_unix_date->format('U');
+
+                $total_time_minutes = ($end_unix_date - $init_unix_date)/60;
+
+                $single_upgrade = array(
+                    'building_upgrade' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
+                    'next_level' => $module->{'resources_building_lvl_'.$upgrades_line->upgrade_id} + 1,
+                    'total_time_minutes' => $total_time_minutes,
+                    'date_init' => $init_unix_date,
+                    'date_finish' => $end_unix_date
+                );
+
+                array_push($upgrade_line, $single_upgrade);
+            }
+
             $module_info = array(
                 'id' => $module->id,
                 'name' => $module->name,
@@ -98,7 +122,7 @@ class ResourcesBuildingsController extends Controller
                     $config_resources[1]->name . '_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier,
                     $config_resources[2]->name . '_qty_minute' => $module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier
                 ),
-
+                'upgrades_line' => $upgrade_line
 
             );
 
