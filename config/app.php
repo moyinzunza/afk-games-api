@@ -175,7 +175,11 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        //passport for oauth2
         Laravel\Passport\PassportServiceProvider::class,
+
+        //firebase cloud messages
+        Kreait\Laravel\Firebase\ServiceProvider::class,
 
     ],
 
