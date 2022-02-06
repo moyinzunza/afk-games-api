@@ -5,6 +5,7 @@ use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ResourcesBuildingsController;
 use App\Http\Controllers\UpgradesController;
 use App\Http\Controllers\CloudMessagingController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::get('/cron/clean_pushnotification_tokens', [CloudMessagingController::cla
 
 //Upgrade resources buildings Cron
 Route::get('/cron/upgrades_resources_buildings', [UpgradesController::class, 'process_resources_buildings'])->name('process_resources_buildings');
+
+//Inactivate Accounts Cron
+Route::get('/cron/inactivate_accounts', [AuthController::class, 'inactivate_accounts'])->name('inactivate_accounts');
 
 //Utils Api
 Route::get('/api/v1/get_resources_buildings_prices', [ResourcesBuildingsController::class, 'get_resources_buildings_prices'])->name('get_resources_buildings_prices');

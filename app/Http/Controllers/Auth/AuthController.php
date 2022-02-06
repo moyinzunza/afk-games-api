@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+use DateTime;
+
 class AuthController extends Controller
 {
     /**
@@ -155,5 +157,15 @@ class AuthController extends Controller
             ),
             'result' => $request->user()
         ]);
+    }
+
+    public function inactivate_accounts(){
+
+        $date = new DateTime();
+        $date->modify("-7 day");
+        User::where('updated_at', '<', $date)->update([
+            'status' => 'inactive'
+        ]);
+
     }
 }

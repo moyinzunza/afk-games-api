@@ -40,6 +40,10 @@ class HandshakeController extends Controller
                 'token' => $request->push_notification_token
             ]);
         }
+        
+        User::where('id', Auth::id())->update([
+            'status' => 'active'
+        ]);
 
         return response()->json([
             'status' => array(
