@@ -2,11 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\HandshakeController;
-use App\Http\Controllers\ResourcesBuildingsController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ModulesController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\HandshakeController;
+use App\Http\Controllers\Api\ResourcesBuildingsController;
+use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\ModulesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes

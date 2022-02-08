@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ResourcesController;
-use App\Http\Controllers\ResourcesBuildingsController;
-use App\Http\Controllers\UpgradesController;
-use App\Http\Controllers\CloudMessagingController;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Api\ResourcesController;
+use App\Http\Controllers\Api\ResourcesBuildingsController;
+use App\Http\Controllers\Api\UpgradesController;
+use App\Http\Controllers\Api\CloudMessagingController;
+use App\Http\Controllers\Api\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------

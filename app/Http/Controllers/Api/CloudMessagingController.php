@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Exception\Messaging\InvalidMessage;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\UpgradesLine;
 use App\Models\Modules;
@@ -105,14 +105,17 @@ class ResourcesBuildingsController extends Controller
                 ),
                 'buildings_levels' => array(
                     $config_resources[0]->name => array(
+                        'id' => 1,
                         'level' => $module->resources_building_lvl_1,
                         'next_level_price_time' => $this->get_single_price_time(1, $module->resources_building_lvl_1 + 1)
                     ),
                     $config_resources[1]->name => array(
+                        'id' => 2,
                         'level' => $module->resources_building_lvl_2,
                         'next_level_price_time' => $this->get_single_price_time(2, $module->resources_building_lvl_2 + 1)
                     ),
                     $config_resources[2]->name => array(
+                        'id' => 3,
                         'level' => $module->resources_building_lvl_3,
                         'next_level_price_time' => $this->get_single_price_time(3, $module->resources_building_lvl_3 + 1)
                     )
