@@ -38,15 +38,15 @@ Route::group([
         Route::get('home',[HomeController::class, 'get_home_data']);
 
         //user managment
-        Route::get('logout', [AuthController::class, 'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
 
         //Modules
         Route::get('get_modules', [ModulesController::class, 'get_modules']);
 
         //Resources 
-        Route::get('get_module_resources/{module_id}', [ResourcesBuildingsController::class, 'get_module_resources']);
-        Route::post('upgrade_resources_building', [ResourcesBuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
+        Route::get('module/{module_id}/resources', [ResourcesBuildingsController::class, 'get_module_resources']);
+        Route::post('module/{module_id}/resources', [ResourcesBuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
 
     });
 });

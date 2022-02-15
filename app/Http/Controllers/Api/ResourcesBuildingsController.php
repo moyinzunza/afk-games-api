@@ -139,12 +139,11 @@ class ResourcesBuildingsController extends Controller
         }
     }
 
-    public function upgrade_resources_building(Request $request)
+    public function upgrade_resources_building(Request $request, $module_id)
     {
 
         $validator = Validator::make($request->all(), [
-            'building_id' => 'required|integer|between:1,3',
-            'module_id' => 'required'
+            'building_id' => 'required|integer|between:1,3'
         ]);
 
         if ($validator->fails()) {
@@ -156,7 +155,7 @@ class ResourcesBuildingsController extends Controller
             return response()->json($data, 400);
         }
 
-        $module = Modules::where('id', $request->module_id)->where('user_id', Auth::id())->first();
+        $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
 
         if (empty($module)) {
             $data['status'] = array(

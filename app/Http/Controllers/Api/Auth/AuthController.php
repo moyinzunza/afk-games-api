@@ -30,8 +30,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string',
-            'username' => 'required|string|unique:users',
-            'referred_by_username' => 'string'
+            'username' => 'required|string|unique:users'
         ]);
 
         if ($validator->fails()) {
@@ -93,11 +92,22 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
             'remember_me' => 'boolean'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(array(
+                'status' => array(
+                    'statusCode' => 400,
+                    'message' => 'The given data was invalid.'
+                ),
+                'result' => array('errors' => $validator->errors())
+            ), 400);
+        }
 
         $credentials = request(['email', 'password']);
 

@@ -1,0 +1,550 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@0,300;0,700;1,300&display=swap');
+:root {
+    --color-blue: #0e1422;
+    --color-gray: #1d2636;
+    --color-green: #74fb8b;
+    --color-white: #fff;
+    --color-gray-lite: #ceced1;
+    --color-black: #000;
+}
+body{
+    background-image: url(/images/bg.gif);
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: top center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+}
+.universe-account{
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    place-items: center;
+    height: 100vh;
+}
+.universe-account-login,
+.universe-account-register{
+    width: 360px;
+    margin: 20px;
+    position: relative;
+    padding: 30px;
+    text-align: center;
+}
+.universe-account-login > p,
+.universe-account-register > p{
+    font-size: 26px;
+    text-align: center;
+    color: var(--color-white);
+    font-weight: 700;
+    margin: 0;
+    margin-bottom: 15px;
+}
+.universe-account-login{
+    display: block;
+}
+.universe-account-register{
+    display: none;
+}
+.accont-other-container{
+  color: var(--color-green);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+}
+.corner-left-top,
+.corner-right-top,
+.corner-right-bottom,
+.corner-left-bottom{
+    position: absolute;
+    max-width: 30px;
+}
+.corner-left-top{
+    top: 0;
+    transform: rotate(225deg);
+    left: 0;
+}
+.corner-right-top{
+    top: 0;
+    transform: rotate(315deg);
+    right: 0;
+}
+.corner-right-bottom{
+    bottom: 0;
+    transform: rotate(45deg);
+    right: 0;
+}
+.corner-left-bottom{
+    bottom: 0;
+    transform: rotate(135deg);
+    left: 0;
+}
+.bar-bottom{
+    max-width: 250px; 
+}
+.universe-input{
+    width: 100%;
+    text-align: left;
+    margin-bottom: 15px;
+}
+.universe-input label{
+    display: block;
+    color: var(--color-white);
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.universe-input input{
+    width: 100%;
+    max-width: calc(100% - 30px);
+    border: 0;
+    padding: 10px 15px;
+    outline: 0;
+    color: var(--color-white);
+    background: var(--color-gray);
+}
+.universe-input-checkbox{
+    margin-bottom: 15px;
+}
+.universe-input-checkbox input{
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    vertical-align: top;
+}
+.universe-input-checkbox label{
+    display: inline-block;
+    color: var(--color-white);
+    font-weight: 700;
+    margin-bottom: 5px;
+    vertical-align: middle;
+}
+.btn{
+    padding: 6px 15px;
+    text-align: center;
+    outline: 0;
+    text-decoration: none;
+    border: 0;
+    background: var(--color-green);
+    color: #0e1422;
+    width: 100%;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all .5s;
+    border: 2px solid transparent;
+}
+.btn:hover{
+    border: 2px solid var(--color-green);
+    background: transparent;
+    color: var(--color-gray-lite);
+}
+.universe-account-errors{
+    padding: 20px;
+    display: none;
+    background: rgba(0, 0, 0, .3);
+    margin: 15px 0;
+    text-align: left;
+    position: relative;
+}
+.universe-account-errors p.error{
+    position: relative;
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #ff9900;
+}
+.universe-account-errors p.success{
+    position: relative;
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--color-green); 
+    font-weight: 700;
+}
+.universe-account-errors .close-errors{
+    position: absolute;
+    width: 15px;
+    cursor: pointer;
+    top: 5px;
+    right: 5px;
+}
+.universe{
+    width: 1080px;
+    margin: 15px auto; 
+}
+@media screen and (max-width: 1120px){
+    .universe{
+        width: 1080px;
+        margin: 15px 20px;
+    }
+     
+}
+.universe__left{
+   width: 180px;
+   display: inline-block;
+   vertical-align: top;
+   margin-right: 30px;
+}
+.universe__left a{
+    max-width: 100%;
+    display: block;
+}
+.universe__left__menu{
+  margin: 50px 0;
+  margin-bottom: 0px;
+  background-color: var(--color-gray);
+  padding: 15px 30px;
+  border-radius: 5px;
+}
+.universe__left__menu ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+.universe__left__menu ul li a{
+    color: var(--color-gray-lite);
+    margin: 8px 0;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all .5s;
+}
+.universe__left__menu ul li a:hover{
+    color:var(--color-green);
+}
+.universe__left__btns{
+    margin-bottom: 5px;
+}
+.universe__left__btns a{
+    display: inline-block;
+    margin-top: 10px;
+    width: calc(100% - 30px);
+}
+.universe__right{
+    display: inline-block;
+    vertical-align: top;
+    width: calc(900px - 34px);
+}
+.universe__right__header__language{
+    display: inline-block;
+    vertical-align: middle;
+    width: 42.5%;
+    text-align: left;
+    padding: 10px 30px;
+    color: var(--color-gray-lite);
+    font-weight: 700;
+    background-color: var(--color-gray);
+    font-size: 14px;
+    border-radius: 5px 0 0 0 ;
+}
+#google_translate_element{
+    display: inline-block;
+    width: 200px;
+    vertical-align: middle;
+}
+#google_translate_element > .goog-te-gadget{
+    line-height: 0;
+    font-size: 0;
+}
+#google_translate_element > .goog-te-gadget > span{
+    display: none;
+}
+
+#google_translate_element select{
+  background: transparent;
+  padding: 3px;
+  color: #ceced1;
+  text-align: left;
+  border-radius: 0;
+  margin: 0;
+  margin-left: 5px;
+}
+#google_translate_element option{
+    color: var(--color-gray);
+}
+.universe__right__header__icons{
+    display: inline-block;
+    vertical-align: top;
+    width: 43%;
+    text-align: right;
+    padding: 11px 30px;
+    padding-bottom: 9px;
+    color: var(--color-gray-lite);
+    font-weight: 700;
+    background-color: var(--color-gray);
+    font-size: 14px;
+    margin-left: -5px;
+    border-radius: 0 5px 0 0 ;
+}
+.universe__right__header__icons a{
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    text-decoration: none;
+    color: var(--color-green);
+    transition: all .5s;
+}
+.universe__right__header__icons a:hover{
+    opacity: .7;
+}
+.universe__right__header__icons a.logout{
+    position: relative;
+    top: -3px;
+}
+.universe__right__header__icons img{
+    height: 21px;
+}
+.universe__right__header__menu{
+    margin: 0;
+    margin-top: -12px;
+}
+.universe__right__header__menu ul{
+    list-style: none;
+    margin: 0;
+    padding: 0 35px;
+    text-align: right;
+    display:block;
+    width: calc(100% - 70px);
+}
+.universe__right__header__menu ul li{
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 30px;
+}
+.universe__right__header__menu ul li a{
+    color: var(--color-gray-lite);
+    margin: 8px 0;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all .5s;
+}
+.universe__right__header__menu ul li a:hover{
+    color:var(--color-green);
+}
+.universe__left__btns{
+    margin-bottom: 5px;
+}
+.universe__right__content{
+    width: calc(100% - 8px);
+    margin-right: 8px;
+}
+.universe__right__content__left{
+   display: inline-block; 
+   vertical-align: top;
+   width: calc(100% - 213px);
+}
+.universe__right__content__right{
+    width: 180px;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 29px;
+}
+.universe__right__content__right__classification,
+.universe__right__content__right__planets{
+    margin: 5px 0;
+    background-color: var(--color-gray);
+    padding: 15px 30px;
+    border-radius: 5px;
+    text-align: left;
+    color: var(--color-gray-lite);
+}
+.universe__right__content__right__classification > p,
+.universe__right__content__right__planets > p{
+    font-size: 18px;
+    margin: 0 0;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.universe__right__content__right__planets{
+    margin-top: 0;
+}
+.universe__right__content__right__classification__item{
+    margin-bottom: 10px;
+}
+.universe__right__content__right__classification__item__image{
+    display: inline-block;
+    vertical-align: middle;
+    width: 45%;
+    height: 35px;
+    margin: 0px;
+    border: 4px solid var(--color-blue);
+    background-attachment: inherit;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.universe__right__content__right__classification__item__content{
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.universe__right__content__right__classification__item__content span{
+    display: block;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+.universe__right__content__right__classification__item__content > span:first-child{
+    font-weight: 700;
+}
+.universe__right__content__right__planets__item{
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.universe__right__content__right__planets__item__image{
+    display: inline-block;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    margin: 0px;
+    background-attachment: inherit;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.universe__right__content__right__planets__item__content{
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.universe__right__content__right__planets__item__content span{
+    display: block;
+    font-size: 14px;
+}
+.universe__right__content__right__planets__item__content > span:first-child{
+    font-weight: 700;
+}
+.universe__right__content__left__container{
+  position: relative;
+}
+.universe__right__content__left__container__first{
+    position: relative;
+    margin-bottom: 10px;
+}
+.universe__right__content__left__container__first > img{
+    position: relative;
+    max-width: 100%;
+}
+.universe__right__content__left__container__first__content{
+    position:absolute;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    max-width: calc(100% - 40px);
+    max-height: calc(100% - 40px);
+    top: 0;
+    left: 0;
+    overflow: auto;
+    margin: 20px;
+}
+.universe__right__content__left__container__first__content__img{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-attachment: inherit;
+    background-size: cover;
+    background-position: center ;
+}
+/* width */
+.universe__right__content__left__container__first__content::-webkit-scrollbar {
+    width: 3px;
+}
+/* Track */
+.universe__right__content__left__container__first__content::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px var(--color-green); 
+    border-radius: 10px;
+}
+/* Handle */
+.universe__right__content__left__container__first__content::-webkit-scrollbar-thumb {
+    background:#666; 
+    border-radius: 10px;
+}
+/* Handle on hover */
+.universe__right__content__left__container__first__content::-webkit-scrollbar-thumb:hover {
+    background: #212121; 
+}
+.universe__right__content__left__container__first__content__text{
+    color: var(--color-gray-lite);
+    font-weight: 700;
+    position: absolute;
+    bottom: 0;
+    background: var(--color-gray);
+    padding: 10px 30px;
+}
+.universe__right__content__left__container__second{
+    margin: 0px 0;
+    background-color: var(--color-gray);
+    padding: 5px 25px;
+    border-radius: 5px;
+    text-align: left;
+    color: var(--color-gray-lite);
+    margin-bottom: 15px;
+}
+.universe__right__content__left__container__second__img{
+    width: 60px;
+    height: 60px;
+    background-attachment: inherit;
+    background-size: cover;
+    background-position: center ;
+    display: inline-block;
+    vertical-align: top;
+    margin: 5px 3px;
+    cursor: pointer;
+    border: 5px solid var(--color-blue);
+    margin-bottom: 5px;
+}
+.universe__right__content__left__container__third{
+    margin-bottom: 30px;
+}
+.universe__right__content__left__container__third__section{
+    display: inline-block;
+    max-width: calc(50% - 7px);
+    text-align: left;
+    padding: 5px 0px;
+    border-radius: 5px;
+    text-align: center;
+    color: var(--color-gray-lite);
+    position: relative;
+    vertical-align: top;
+}
+.universe__right__content__left__container__third .universe__right__content__left__container__third__section:nth-child(odd){
+  margin-right: 5px;
+}
+.universe__right__content__left__container__third .universe__right__content__left__container__third__section:nth-child(even){
+  margin-left: 5px;
+}
+.universe__right__content__left__container__third__section > img{
+    max-width: 60%;
+}
+.universe__right__content__left__container__third__section__title{
+    width: calc(100% - 60px);
+    background: var(--color-gray);
+    padding: 10px 30px;
+    font-weight: 700;
+    border-radius: 5px;
+    position: relative;
+    text-align: left;
+}
+.universe__right__content__left__container__third__section__title img{
+    width: 40px;
+    position: absolute;
+    right: 30px;
+    top: 12px;
+}
+.universe__right__content__left__container__third__section__content{
+    position: relative;
+    background: var(--color-gray);
+    padding: 30px 30px;
+    width: calc(100% - 60px);
+    border-radius: 5px;
+    text-align: left;
+}
+.universe__right__content__left__container__third__section__content__corners{
+    position: relative;
+    padding: 20px;
+}
+.universe__right__content__left__container__third__section__content__corners > img{
+    max-width: 15px;
+}

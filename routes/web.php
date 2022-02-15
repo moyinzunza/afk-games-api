@@ -18,9 +18,23 @@ use App\Http\Controllers\Api\Auth\AuthController;
 |
 */
 
+//routes for webviews
 Route::get('/', function () {
     return view('welcome');
+})->name('welcome');
+
+Route::get('/login', function () {
+    return view('login');
 })->name('login');
+
+Route::get('/home', function () {
+    return view('home');
+})->name('home');
+
+Route::get('/resources', function () {
+    return view('resources');
+})->name('resources');
+
 
 //Resources Api Cron
 Route::get('/cron/update_resources', [ResourcesController::class, 'update_resources'])->name('update_resources');
