@@ -9,6 +9,9 @@ use App\Models\Resources;
 use App\Models\UpgradesLine;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\CalculatePricesTimeController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use DateInterval;
 use DateTime;
 
 class FacilitiesController extends Controller
@@ -99,5 +102,118 @@ class FacilitiesController extends Controller
             $data['status'] = array("statusCode" => 400, "message" => 'no module found');
             return response()->json($data, 400);
         }
+    }
+
+
+    public function upgrade_facility(Request $request, $module_id)
+    {
+        $facilities_config = Facilities::get();
+        $validator = Validator::make($request->all(), [
+            'building_id' => 'required|integer|between:1,'.count($facilities_config)
+        ]);
+
+        if ($validator->fails()) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'The given data was invalid.'
+            );
+            $data['result'] = array('errors' => $validator->errors());
+            return response()->json($data, 400);
+        }
+
+        $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
+
+        if (empty($module)) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'Module not found.'
+            );
+            return response()->json($data, 400);
+        }
+
+        $config_resources = Resources::get();
+        $user_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $request->building_id)->first();
+        if (empty($user_facility)) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'facility not found.'
+            );
+            return response()->json($data, 400);
+        }
+
+        $next_lvl = $user_facility->level + 1;
+        $next_lvl_price = CalculatePricesTimeController::get_facility_single_price_time($request->building_id, $next_lvl);
+        $price_resources_1 = $next_lvl_price[$config_resources[0]->name];
+        $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
+        $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
+
+        if (
+            $price_resources_1 > $module->resources_1
+            || $price_resources_2 > $module->resources_2
+            || $price_resources_3 > $module->resources_3
+        ) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'insufficient resources.',
+                'result' => array(
+                    'module' => array(
+                        'name' => $module->name,
+                        $config_resources[0]->name => $module->resources_1,
+                        $config_resources[1]->name => $module->resources_2,
+                        $config_resources[2]->name => $module->resources_3,
+                        'building_upgrade' => $facilities_config[$request->building_id]->name,
+                        'current_level' => $user_facility->level
+                    ),
+                    'next_lvl_price_time' => $next_lvl_price
+                )
+            );
+            return response()->json($data, 400);
+        }
+
+        $module->resources_1 -= $next_lvl_price[$config_resources[0]->name];
+        $module->resources_2 -= $next_lvl_price[$config_resources[1]->name];
+        $module->resources_3 -= $next_lvl_price[$config_resources[2]->name];
+        $module->save();
+
+        $init_time = new DateTime();
+        $finish_time = new DateTime();
+        $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
+
+        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->building_id)->where('type', 'facilities')->first();
+
+        if (!empty($upgrade_line)) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'Upgrade already in progress.'
+            );
+            return response()->json($data, 400);
+        }
+
+        UpgradesLine::create([
+            'user_id' => Auth::id(),
+            'module_id' => $module->id,
+            'upgrade_id' => $request->building_id,
+            'type' => 'facilities',
+            'finish_at' => $finish_time
+        ]);
+
+        $data['status'] = array(
+            'statusCode' => 200,
+            'message' => 'Upgrade in progress',
+            'result' => array(
+                'module' => array(
+                    'name' => $module->name,
+                    $config_resources[0]->name => $module->resources_1,
+                    $config_resources[1]->name => $module->resources_2,
+                    $config_resources[2]->name => $module->resources_3,
+                    'building_upgrade' => $facilities_config[$request->building_id]->name,
+                    'next_level' => $next_lvl
+                ),
+                'total_time_minutes' => $next_lvl_price['time_minutes'],
+                'date_init' => $init_time->format('U'),
+                'date_finish' => $finish_time->format('U')
+            )
+        );
+        return response()->json($data, 200);
     }
 }

@@ -51,6 +51,7 @@ Route::group([
 
         //Facilities
         Route::get('module/{module_id}/facilities', [FacilitiesController::class, 'get_module_facilities']);
+        Route::post('module/{module_id}/facilities', [FacilitiesController::class, 'upgrade_facility'])->name('upgrade_facility');
 
     });
 });
