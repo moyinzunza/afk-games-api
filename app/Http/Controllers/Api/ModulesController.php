@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Modules;
-use App\Models\ConfigResources;
+use App\Models\Resources;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -13,7 +13,7 @@ class ModulesController extends Controller
     public function get_modules()
     {
         $modules = Modules::where('user_id', Auth::id())->get();
-        $config_resources = json_decode(ConfigResources::get());
+        $config_resources = json_decode(Resources::get());
         $modules_arr = array();
 
         foreach ($modules as $module) {

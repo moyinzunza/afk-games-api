@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\HandshakeController;
 use App\Http\Controllers\Api\ResourcesBuildingsController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ModulesController;
+use App\Http\Controllers\Api\FacilitiesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -47,6 +48,9 @@ Route::group([
         //Resources 
         Route::get('module/{module_id}/resources', [ResourcesBuildingsController::class, 'get_module_resources']);
         Route::post('module/{module_id}/resources', [ResourcesBuildingsController::class, 'upgrade_resources_building'])->name('upgrade_resources_building');
+
+        //Facilities
+        Route::get('module/{module_id}/facilities', [FacilitiesController::class, 'get_module_facilities']);
 
     });
 });

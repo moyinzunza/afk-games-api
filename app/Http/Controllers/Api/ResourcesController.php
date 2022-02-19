@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Modules;
-use App\Models\ConfigResources;
+use App\Models\Resources;
 
 class ResourcesController extends Controller
 {
@@ -13,7 +13,7 @@ class ResourcesController extends Controller
         //runs every minute
 
         $users = User::where('status', 'active')->get();
-        $config_resources = json_decode(ConfigResources::get());
+        $config_resources = json_decode(Resources::get());
 
         foreach ($users as $user) {
 

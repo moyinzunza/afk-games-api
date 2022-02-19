@@ -6,7 +6,7 @@ use App\Models\Modules;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ConfigResources;
+use App\Models\Resources;
 
 
 class HomeController extends Controller
@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function get_home_data(Request $request)
     {
 
-        $config_resources = ConfigResources::get();
+        $config_resources = Resources::get();
 
         if (empty($request->module)) {
             $module = Modules::where('user_id', Auth::id())->first();

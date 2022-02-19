@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\UpgradesLine;
 use App\Models\Modules;
-use App\Models\ConfigResources;
+use App\Models\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\CalculatePricesTimeController;
 
 use DateTime;
 use DateInterval;
@@ -18,16 +19,16 @@ class ResourcesBuildingsController extends Controller
 
     public function get_resources_buildings_prices()
     {
-        $config_resources = ConfigResources::get();
+        $config_resources = Resources::get();
         $prices_arr = array();
 
         for ($i = 1; $i <= 30; $i++) {
 
             $buildings_arr = array(
                 "level_" . $i => [
-                    $config_resources[0]->name . "_building" => $this->get_single_price_time(1, $i),
-                    $config_resources[1]->name . "_building" => $this->get_single_price_time(2, $i),
-                    $config_resources[2]->name . "_building" => $this->get_single_price_time(3, $i)
+                    $config_resources[0]->name . "_building" => CalculatePricesTimeController::get_single_price_time(1, $i),
+                    $config_resources[1]->name . "_building" => CalculatePricesTimeController::get_single_price_time(2, $i),
+                    $config_resources[2]->name . "_building" => CalculatePricesTimeController::get_single_price_time(3, $i)
                 ]
             );
 
@@ -39,35 +40,11 @@ class ResourcesBuildingsController extends Controller
         return response()->json($data, 200);
     }
 
-    public function fibonacci($n)
-    {
-        $fibonacci  = [0, 1];
 
-        for ($i = 2; $i <= $n; $i++) {
-            $fibonacci[] = $fibonacci[$i - 1] + $fibonacci[$i - 2];
-        }
-        return $fibonacci[$n];
-    }
-
-    public function get_single_price_time($building_id, $building_level)
-    {
-
-        $config_resources = ConfigResources::get();
-        $selected_resource = $config_resources[$building_id - 1];
-
-        $multiplier = $this->fibonacci($building_level);
-
-        return array(
-            $config_resources[0]->name => (int)($selected_resource->resources1_price_multiplier * $multiplier),
-            $config_resources[1]->name => (int)($selected_resource->resources2_price_multiplier * $multiplier),
-            $config_resources[2]->name => (int)($selected_resource->resources3_price_multiplier * $multiplier),
-            "time_minutes" => (int)($selected_resource->time_multiplier * $multiplier)
-        );
-    }
 
     public function get_module_resources($module_id)
     {
-        $config_resources = json_decode(ConfigResources::get());
+        $config_resources = json_decode(Resources::get());
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         if (!empty($module)) {
 
@@ -109,7 +86,7 @@ class ResourcesBuildingsController extends Controller
                         'name' => $config_resources[0]->name,
                         'image' => $config_resources[0]->image_url,
                         'level' => $module->resources_building_lvl_1,
-                        'next_level_price_time' => $this->get_single_price_time(1, $module->resources_building_lvl_1 + 1),
+                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(1, $module->resources_building_lvl_1 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier
                     ),
                     array(
@@ -117,7 +94,7 @@ class ResourcesBuildingsController extends Controller
                         'name' => $config_resources[1]->name,
                         'image' => $config_resources[1]->image_url,
                         'level' => $module->resources_building_lvl_2,
-                        'next_level_price_time' => $this->get_single_price_time(2, $module->resources_building_lvl_2 + 1),
+                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(2, $module->resources_building_lvl_2 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier
                     ),
                     array(
@@ -125,7 +102,7 @@ class ResourcesBuildingsController extends Controller
                         'name' => $config_resources[2]->name,
                         'image' => $config_resources[2]->image_url,
                         'level' => $module->resources_building_lvl_3,
-                        'next_level_price_time' => $this->get_single_price_time(3, $module->resources_building_lvl_3 + 1),
+                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(3, $module->resources_building_lvl_3 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier
                     )
                 ),
@@ -169,10 +146,10 @@ class ResourcesBuildingsController extends Controller
             return response()->json($data, 400);
         }
 
-        $config_resources = ConfigResources::get();
+        $config_resources = Resources::get();
 
         $next_lvl = $module->{'resources_building_lvl_' . $request->building_id} + 1;
-        $next_lvl_price = $this->get_single_price_time($request->building_id, $next_lvl);
+        $next_lvl_price = CalculatePricesTimeController::get_single_price_time($request->building_id, $next_lvl);
         $price_resources_1 = $next_lvl_price[$config_resources[0]->name];
         $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
         $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
