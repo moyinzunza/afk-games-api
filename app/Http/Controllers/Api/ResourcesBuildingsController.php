@@ -103,27 +103,31 @@ class ResourcesBuildingsController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'buildings_levels' => array(
-                    $config_resources[0]->name => array(
+                'levels' => array(
+                    array(
                         'id' => 1,
+                        'name' => $config_resources[0]->name,
+                        'image' => $config_resources[0]->image_url,
                         'level' => $module->resources_building_lvl_1,
-                        'next_level_price_time' => $this->get_single_price_time(1, $module->resources_building_lvl_1 + 1)
+                        'next_level_price_time' => $this->get_single_price_time(1, $module->resources_building_lvl_1 + 1),
+                        'generate_qty_minute' => $module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier
                     ),
-                    $config_resources[1]->name => array(
+                    array(
                         'id' => 2,
+                        'name' => $config_resources[1]->name,
+                        'image' => $config_resources[1]->image_url,
                         'level' => $module->resources_building_lvl_2,
-                        'next_level_price_time' => $this->get_single_price_time(2, $module->resources_building_lvl_2 + 1)
+                        'next_level_price_time' => $this->get_single_price_time(2, $module->resources_building_lvl_2 + 1),
+                        'generate_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier
                     ),
-                    $config_resources[2]->name => array(
+                    array(
                         'id' => 3,
+                        'name' => $config_resources[2]->name,
+                        'image' => $config_resources[2]->image_url,
                         'level' => $module->resources_building_lvl_3,
-                        'next_level_price_time' => $this->get_single_price_time(3, $module->resources_building_lvl_3 + 1)
+                        'next_level_price_time' => $this->get_single_price_time(3, $module->resources_building_lvl_3 + 1),
+                        'generate_qty_minute' => $module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier
                     )
-                ),
-                'generate_qty_minute' => array(
-                    $config_resources[0]->name . '_qty_minute' => $module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier,
-                    $config_resources[1]->name . '_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier,
-                    $config_resources[2]->name . '_qty_minute' => $module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier
                 ),
                 'upgrades_line' => $upgrade_line
 
