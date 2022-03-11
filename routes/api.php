@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ResourcesBuildingsController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ModulesController;
 use App\Http\Controllers\Api\FacilitiesController;
+use App\Http\Controllers\Api\TechnologiesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -52,6 +53,11 @@ Route::group([
         //Facilities
         Route::get('module/{module_id}/facilities', [FacilitiesController::class, 'get_module_facilities']);
         Route::post('module/{module_id}/facilities', [FacilitiesController::class, 'upgrade_facility'])->name('upgrade_facility');
+
+
+        //Facilities
+        Route::get('module/{module_id}/technologies', [TechnologiesController::class, 'get_module_technologies']);
+        Route::post('module/{module_id}/technologies', [TechnologiesController::class, 'upgrade_technology'])->name('upgrade_technology');
 
     });
 });

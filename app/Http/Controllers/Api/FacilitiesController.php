@@ -16,7 +16,6 @@ use DateTime;
 
 class FacilitiesController extends Controller
 {
-
     public function get_module_facilities($module_id)
     {
 
@@ -105,7 +104,6 @@ class FacilitiesController extends Controller
         }
     }
 
-
     public function upgrade_facility(Request $request, $module_id)
     {
         $facilities_config = Facilities::get();
@@ -162,7 +160,7 @@ class FacilitiesController extends Controller
                         $config_resources[0]->name => $module->resources_1,
                         $config_resources[1]->name => $module->resources_2,
                         $config_resources[2]->name => $module->resources_3,
-                        'building_upgrade' => $facilities_config[$request->building_id]->name,
+                        'building_upgrade' => $facilities_config[$request->building_id - 1]->name,
                         'current_level' => $user_facility->level
                     ),
                     'next_lvl_price_time' => $next_lvl_price
