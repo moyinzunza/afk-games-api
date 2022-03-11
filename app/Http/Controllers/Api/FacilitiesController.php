@@ -42,12 +42,13 @@ class FacilitiesController extends Controller
 
                 $next_level = 1;
                 $current_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $upgrades_line->upgrade_id)->first();
-                if (!empty($upgrade_facility)) {
+                if (!empty($current_facility)) {
                     $next_level = $current_facility->level + 1;
                 }
 
                 $single_upgrade = array(
-                    'building_upgrade' => $facilities_config[$upgrades_line->upgrade_id]->name,
+                    'building_id' => $upgrades_line->upgrade_id,
+                    'building_upgrade' => $facilities_config[$upgrades_line->upgrade_id -1]->name,
                     'next_level' => $next_level,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -73,7 +74,7 @@ class FacilitiesController extends Controller
                 }
 
                 $facility_arr = array(
-                    'id' => 1,
+                    'id' => $facility->id,
                     'name' => $facility->name,
                     'image' => $facility->image_url,
                     'level' => $user_facility->level,
@@ -206,7 +207,7 @@ class FacilitiesController extends Controller
                     $config_resources[0]->name => $module->resources_1,
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3,
-                    'building_upgrade' => $facilities_config[$request->building_id]->name,
+                    'building_upgrade' => $facilities_config[$request->building_id -1]->name,
                     'next_level' => $next_lvl
                 ),
                 'total_time_minutes' => $next_lvl_price['time_minutes'],

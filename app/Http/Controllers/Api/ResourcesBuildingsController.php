@@ -62,6 +62,7 @@ class ResourcesBuildingsController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date)/60;
 
                 $single_upgrade = array(
+                    'building_id' => $upgrades_line->upgrade_id,
                     'building_upgrade' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
                     'next_level' => $module->{'resources_building_lvl_'.$upgrades_line->upgrade_id} + 1,
                     'total_time_minutes' => $total_time_minutes,
@@ -83,7 +84,8 @@ class ResourcesBuildingsController extends Controller
                 'levels' => array(
                     array(
                         'id' => 1,
-                        'name' => $config_resources[0]->name,
+                        //'name' => $config_resources[0]->name,
+                        'name' => $config_resources[0]->name.' mine',
                         'image' => $config_resources[0]->image_url,
                         'level' => $module->resources_building_lvl_1,
                         'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(1, $module->resources_building_lvl_1 + 1),
@@ -91,7 +93,8 @@ class ResourcesBuildingsController extends Controller
                     ),
                     array(
                         'id' => 2,
-                        'name' => $config_resources[1]->name,
+                        //'name' => $config_resources[1]->name,
+                        'name' => $config_resources[1]->name.' mine',
                         'image' => $config_resources[1]->image_url,
                         'level' => $module->resources_building_lvl_2,
                         'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(2, $module->resources_building_lvl_2 + 1),
@@ -99,7 +102,8 @@ class ResourcesBuildingsController extends Controller
                     ),
                     array(
                         'id' => 3,
-                        'name' => $config_resources[2]->name,
+                        //'name' => $config_resources[2]->name,
+                        'name' => 'refinery',
                         'image' => $config_resources[2]->image_url,
                         'level' => $module->resources_building_lvl_3,
                         'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(3, $module->resources_building_lvl_3 + 1),
