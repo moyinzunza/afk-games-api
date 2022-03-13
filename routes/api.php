@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ArmyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
@@ -54,10 +55,14 @@ Route::group([
         Route::get('module/{module_id}/facilities', [FacilitiesController::class, 'get_module_facilities']);
         Route::post('module/{module_id}/facilities', [FacilitiesController::class, 'upgrade_facility'])->name('upgrade_facility');
 
-
-        //Facilities
+        //Technologies
         Route::get('module/{module_id}/technologies', [TechnologiesController::class, 'get_module_technologies']);
         Route::post('module/{module_id}/technologies', [TechnologiesController::class, 'upgrade_technology'])->name('upgrade_technology');
+
+        //Army
+        Route::get('module/{module_id}/army', [ArmyController::class, 'get_module_army']);
+        Route::post('module/{module_id}/army', [ArmyController::class, 'create_army'])->name('create_army');
+        Route::post('module/{module_id}/get_army_movement', [ArmyController::class, 'get_army_movement'])->name('get_army_movement');
 
     });
 });

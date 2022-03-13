@@ -232,16 +232,6 @@ class TechnologiesController extends Controller
             return response()->json($data, 400);
         }
 
-
-        $module->resources_1 -= $next_lvl_price[$config_resources[0]->name];
-        $module->resources_2 -= $next_lvl_price[$config_resources[1]->name];
-        $module->resources_3 -= $next_lvl_price[$config_resources[2]->name];
-        $module->save();
-
-        $init_time = new DateTime();
-        $finish_time = new DateTime();
-        $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
-
         $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->technology_id)->where('type', 'technologies')->first();
 
         if (!empty($upgrade_line)) {
@@ -252,6 +242,16 @@ class TechnologiesController extends Controller
             return response()->json($data, 400);
         }
 
+        $module->resources_1 -= $next_lvl_price[$config_resources[0]->name];
+        $module->resources_2 -= $next_lvl_price[$config_resources[1]->name];
+        $module->resources_3 -= $next_lvl_price[$config_resources[2]->name];
+        $module->save();
+
+        $init_time = new DateTime();
+        $finish_time = new DateTime();
+        $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
+
+        
         UpgradesLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,

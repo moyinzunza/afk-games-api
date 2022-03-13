@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ArmyLineController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourcesController;
 use App\Http\Controllers\Api\ResourcesBuildingsController;
@@ -43,7 +44,10 @@ Route::get('/cron/update_resources', [ResourcesController::class, 'update_resour
 Route::get('/cron/clean_pushnotification_tokens', [CloudMessagingController::class, 'clean_db_tokens'])->name('clean_db_tokens');
 
 //Upgrade resources buildings Cron
-Route::get('/cron/upgrades_resources_buildings', [UpgradesController::class, 'process_resources_buildings'])->name('process_resources_buildings');
+Route::get('/cron/process_upgrades', [UpgradesController::class, 'process_upgrades'])->name('process_upgrades');
+
+//Process army line
+Route::get('/cron/process_army_line', [ArmyLineController::class, 'process_army_line'])->name('process_army_line');
 
 //Inactivate Accounts Cron
 Route::get('/cron/inactivate_accounts', [AuthController::class, 'inactivate_accounts'])->name('inactivate_accounts');
