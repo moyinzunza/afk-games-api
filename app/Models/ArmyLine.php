@@ -13,6 +13,7 @@ class ArmyLine extends Model
         'module_id',
         'army_id',
         'qty',
+        'time_per_unit',
         'type',
         'start_at',
         'finish_at'

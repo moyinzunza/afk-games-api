@@ -267,6 +267,7 @@ class ArmyController extends Controller
             'module_id' => $module->id,
             'army_id' => $request->army_id,
             'qty' => $request->qty,
+            'time_per_unit' => $army_config->time,
             'type' => 'army',
             'finish_at' => $finish_time,
             'start_at' => $init_time
