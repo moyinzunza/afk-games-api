@@ -45,7 +45,11 @@ class HomeController extends Controller
                 'module' => array(
                     'id' => $module->id,
                     'name' => $module->name,
-                    'position' => json_decode($module->position),
+                    'position' => array(
+                        'galaxy' => $module->position_z,
+                        'solar_system' => $module->position_x,
+                        'planet' => $module->position_y
+                    ),
                     'resources' => array(
                         $config_resources[0]->name => array(
                             'qty' => $module->resources_1,

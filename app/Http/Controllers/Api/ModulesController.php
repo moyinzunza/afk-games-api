@@ -22,7 +22,11 @@ class ModulesController extends Controller
                 'id' => $module->id,
                 'name' => $module->name,
                 'construction_space' => $module->construction_space,
-                'position' => json_decode($module->position)
+                'position' => array(
+                    'galaxy' => $module->position_z,
+                    'solar_system' => $module->position_x,
+                    'planet' => $module->position_y
+                )
             );
 
             array_push($modules_arr, $module_info);
@@ -33,7 +37,3 @@ class ModulesController extends Controller
         return response()->json($data, 200);
     }
 }
-
-
-
-

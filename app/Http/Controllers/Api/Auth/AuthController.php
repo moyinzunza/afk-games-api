@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Controller;
+use App\Models\Modules;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,21 +49,21 @@ class AuthController extends Controller
         $uname = str_replace('-', '', $uname);
 
         $check_uname = User::where('username', $uname)->first();
-        if(!empty($check_uname)){
+        if (!empty($check_uname)) {
             return response()->json(array(
                 'status' => array(
                     'statusCode' => 400,
                     'message' => 'The given data was invalid.'
                 ),
-                'result' => array('errors' => array('username' => array('The username '.$uname.' has already been taken.')))
+                'result' => array('errors' => array('username' => array('The username ' . $uname . ' has already been taken.')))
             ), 400);
         }
 
         $referred_by_userid = null;
 
-        if(!empty($request->referred_by_username)){
+        if (!empty($request->referred_by_username)) {
             $chek_referred = User::where('username', $request->referred_by_username)->first();
-            if(!empty($chek_referred)){
+            if (!empty($chek_referred)) {
                 $reward_new_user += $referred_reward_new_user;
                 $referred_by_userid = $chek_referred->id;
                 $chek_referred->paid_resource += $referred_reward;
@@ -78,6 +79,36 @@ class AuthController extends Controller
             'referred_by_userid' => $referred_by_userid,
             'paid_resource' => $reward_new_user
         ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        $position_x = rand(1, 11);
+        $position_y = rand(1, 250);
+        $position_z = 1;
+        $module_exist = Modules::where('position_x', $position_x)->where('position_y', $position_y)->where('position_z', $position_z);
+
+        while (empty($module_exist)) {
+            $position_x = rand(1, 11);
+            $position_y = rand(1, 250);
+            $position_z = 1;
+            $module_exist = Modules::where('position_x', $position_x)->where('position_y', $position_y)->where('position_z', $position_z);
+        }
+
+        Modules::create([
+            'user_id' => $user->id,
+            'name' => 'principal',
+            'construction_space' => rand(150, 300),
+            'resources_1' => 500,
+            'resources_2' => 500,
+            'resources_3' => 500,
+            'resources_building_lvl_1' => 0,
+            'resources_building_lvl_2' => 0,
+            'resources_building_lvl_3' => 0,
+            'position_x' => $position_x,
+            'position_y' => $position_y,
+            'position_z' => $position_z
+        ]);
+
 
         return response()->json([
             'status' => array(
@@ -169,13 +200,13 @@ class AuthController extends Controller
         ]);
     }
 
-    public function inactivate_accounts(){
+    public function inactivate_accounts()
+    {
 
         $date = new DateTime();
         $date->modify("-7 day");
         User::where('updated_at', '<', $date)->update([
             'status' => 'inactive'
         ]);
-
     }
 }
