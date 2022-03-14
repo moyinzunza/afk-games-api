@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\ArmyLine;
 use App\Models\UsersArmy;
+use App\Models\UsersDefense;
 use DateTime;
 
 class ArmyLineController extends Controller
@@ -35,6 +36,12 @@ class ArmyLineController extends Controller
 
             if ($army->type == 'army' && $qty > 0) {
                 $user_army = UsersArmy::where('module_id', $army->module_id)->where('army_id', $army->army_id)->first();
+                $user_army->qty += $qty;
+                $user_army->save();
+                $army->qty -= $qty;
+                $army->save();
+            }else if ($army->type == 'defense' && $qty > 0) {
+                $user_army = UsersDefense::where('module_id', $army->module_id)->where('defense_id', $army->army_id)->first();
                 $user_army->qty += $qty;
                 $user_army->save();
                 $army->qty -= $qty;

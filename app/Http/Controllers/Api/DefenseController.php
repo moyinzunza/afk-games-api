@@ -7,36 +7,32 @@ use App\Models\UsersTechnologies;
 use App\Models\Modules;
 use App\Models\Resources;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Army;
-use App\Models\ArmyConditions;
 use App\Models\ArmyLine;
+use App\Models\Defense;
+use App\Models\DefenseConditions;
 use App\Models\Facilities;
-use App\Models\UsersArmy;
+use App\Models\UsersDefense;
 use App\Models\UsersFacilities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use DateInterval;
 use DateTime;
 
-class ArmyController extends Controller
+class DefenseController extends Controller
 {
-    public function get_module_army($module_id)
+    public function get_module_defense($module_id)
     {
 
-        $army_config = Army::get();
+        $defense_config = Defense::get();
         $config_resources = json_decode(Resources::get());
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
-        $army_arr = array();
+        $defense_arr = array();
         if (!empty($module)) {
 
-            //Army production line
-
-
-            $army_line = ArmyLine::where('user_id', Auth::id())->where('module_id', $module_id)->where('type', 'army')->get();
+            $army_line = ArmyLine::where('user_id', Auth::id())->where('module_id', $module_id)->where('type', 'defense')->get();
 
             $production_line = array();
-
 
             foreach ($army_line as $arm_line) {
 
@@ -48,8 +44,8 @@ class ArmyController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_army = array(
-                    'army_id' => $arm_line->army_id,
-                    'technology_upgrade' => $army_config[$arm_line->army_id - 1]->name,
+                    'defense_id' => $arm_line->army_id,
+                    'technology_upgrade' => $defense_config[$arm_line->army_id - 1]->name,
                     'qty' => $arm_line->qty,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -60,23 +56,23 @@ class ArmyController extends Controller
             }
 
 
-            foreach ($army_config as $army) {
+            foreach ($defense_config as $defense) {
 
-                $user_army = UsersArmy::where('user_id', Auth::id())->where('module_id', $module_id)->where('army_id', $army->id)->first();
-                if (empty($user_army)) {
+                $user_defense = UsersDefense::where('user_id', Auth::id())->where('module_id', $module_id)->where('defense_id', $defense->id)->first();
+                if (empty($user_defense)) {
 
-                    UsersArmy::create([
+                    UsersDefense::create([
                         'user_id' => Auth::id(),
-                        'army_id' => $army->id,
+                        'defense_id' => $defense->id,
                         'qty' => 0,
                         'module_id' => $module_id
                     ]);
 
-                    $user_army = UsersArmy::where('user_id', Auth::id())->where('module_id', $module_id)->where('army_id', $army->id)->first();
+                    $user_defense = UsersDefense::where('user_id', Auth::id())->where('module_id', $module_id)->where('defense_id', $defense->id)->first();
                 }
 
                 $conditions_array = array();
-                $conditions_arr = ArmyConditions::where('army_id', $army->id)->get();
+                $conditions_arr = DefenseConditions::where('defense_id', $defense->id)->get();
                 foreach ($conditions_arr as $condition) {
 
                     $name = "";
@@ -102,21 +98,21 @@ class ArmyController extends Controller
                     }
                 }
 
-                $arm_arr = array(
-                    'id' => $army->id,
-                    'name' => $army->name,
-                    'image' => $army->image_url,
-                    'qty' => $user_army->qty,
+                $def_arr = array(
+                    'id' => $defense->id,
+                    'name' => $defense->name,
+                    'image' => $defense->image_url,
+                    'qty' => $user_defense->qty,
                     'price_time' => array(
-                        $config_resources[0]->name => (int)($army->resources1_price),
-                        $config_resources[1]->name => (int)($army->resources2_price),
-                        $config_resources[2]->name => (int)($army->resources3_price),
-                        "time_minutes" => (int)($army->time)
+                        $config_resources[0]->name => (int)($defense->resources1_price),
+                        $config_resources[1]->name => (int)($defense->resources2_price),
+                        $config_resources[2]->name => (int)($defense->resources3_price),
+                        "time_minutes" => (int)($defense->time)
                     ),
                     'require' => $conditions_array
                 );
 
-                array_push($army_arr, $arm_arr);
+                array_push($defense_arr, $def_arr);
             }
 
             $module_info = array(
@@ -127,11 +123,11 @@ class ArmyController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'army' => $army_arr,
+                'defense' => $defense_arr,
                 'production_line' => $production_line
             );
 
-            $data['status'] = array("statusCode" => 200, "message" => 'army in module');
+            $data['status'] = array("statusCode" => 200, "message" => 'defense in module');
             $data['result'] = $module_info;
             return response()->json($data, 200);
         } else {
@@ -140,11 +136,11 @@ class ArmyController extends Controller
         }
     }
 
-    public function create_army(Request $request, $module_id)
+    public function create_defense(Request $request, $module_id)
     {
-        $army_config = Army::get();
+        $defense_config = Defense::get();
         $validator = Validator::make($request->all(), [
-            'army_id' => 'required|integer|between:1,' . count($army_config),
+            'defense_id' => 'required|integer|between:1,' . count($defense_config),
             'qty' => 'required|integer'
         ]);
 
@@ -168,25 +164,25 @@ class ArmyController extends Controller
         }
 
         $config_resources = Resources::get();
-        $user_army = UsersArmy::where('user_id', Auth::id())->where('army_id', $request->army_id)->first();
-        if (empty($user_army)) {
+        $user_defense = UsersDefense::where('user_id', Auth::id())->where('defense_id', $request->defense_id)->first();
+        if (empty($user_defense)) {
             $data['status'] = array(
                 'statusCode' => 400,
-                'message' => 'army not found.'
+                'message' => 'defense not found.'
             );
             return response()->json($data, 400);
         }
 
-        $army_config = Army::where('id', $request->army_id)->first();
+        $defense_config = Defense::where('id', $request->defense_id)->first();
 
-        $price_resources_1 = $army_config->resources1_price*$request->qty;
-        $price_resources_2 = $army_config->resources2_price*$request->qty;
-        $price_resources_3 = $army_config->resources3_price*$request->qty;
+        $price_resources_1 = $defense_config->resources1_price*$request->qty;
+        $price_resources_2 = $defense_config->resources2_price*$request->qty;
+        $price_resources_3 = $defense_config->resources3_price*$request->qty;
 
 
         //Conditions
         $conditions_array = array();
-        $conditions_arr = ArmyConditions::where('army_id', $request->army_id)->get();
+        $conditions_arr = DefenseConditions::where('defense_id', $request->defense_id)->get();
         foreach ($conditions_arr as $condition) {
 
             $name = "";
@@ -230,12 +226,12 @@ class ArmyController extends Controller
                         $config_resources[1]->name => $module->resources_2,
                         $config_resources[2]->name => $module->resources_3
                     ),
-                    'army_name' => $army_config->name,
+                    'defense_name' => $defense_config->name,
                     'price_time' => array(
-                        $config_resources[0]->name => (int)($army_config->resources1_price*$request->qty),
-                        $config_resources[1]->name => (int)($army_config->resources2_price*$request->qty),
-                        $config_resources[2]->name => (int)($army_config->resources3_price*$request->qty),
-                        "time_minutes" => (int)($army_config->time*$request->qty)
+                        $config_resources[0]->name => (int)($defense_config->resources1_price*$request->qty),
+                        $config_resources[1]->name => (int)($defense_config->resources2_price*$request->qty),
+                        $config_resources[2]->name => (int)($defense_config->resources3_price*$request->qty),
+                        "time_minutes" => (int)($defense_config->time*$request->qty)
                     ),
                     'qty' => $request->qty,
                     'require' => $conditions_array
@@ -244,34 +240,35 @@ class ArmyController extends Controller
             return response()->json($data, 400);
         }
 
-        $module->resources_1 -= $army_config->resources1_price*$request->qty;
-        $module->resources_2 -= $army_config->resources2_price*$request->qty;
-        $module->resources_3 -= $army_config->resources3_price*$request->qty;
+        $module->resources_1 -= $defense_config->resources1_price*$request->qty;
+        $module->resources_2 -= $defense_config->resources2_price*$request->qty;
+        $module->resources_3 -= $defense_config->resources3_price*$request->qty;
         $module->save();
 
         $init_time = new DateTime();
-        $last_army_line = ArmyLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'army')->orderBy('id', 'DESC')->first();
+        $last_army_line = ArmyLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'defense')->orderBy('id', 'DESC')->first();
         if(!empty($last_army_line)){
             $init_time = new DateTime($last_army_line->finish_at);
         }
 
         $finish_time = new DateTime();
-        $finish_time->add(new DateInterval('PT' . (int)($army_config->time*$request->qty) . 'M'));
+        $finish_time->add(new DateInterval('PT' . (int)($defense_config->time*$request->qty) . 'M'));
+
 
         ArmyLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'army_id' => $request->army_id,
+            'army_id' => $request->defense_id,
             'qty' => $request->qty,
-            'time_per_unit' => $army_config->time,
-            'type' => 'army',
+            'time_per_unit' => $defense_config->time,
+            'type' => 'defense',
             'finish_at' => $finish_time,
             'start_at' => $init_time
         ]);
 
         $data['status'] = array(
             'statusCode' => 200,
-            'message' => 'army in progress',
+            'message' => 'defense in progress',
             'result' => array(
                 'module' => array(
                     'name' => $module->name,
@@ -279,9 +276,9 @@ class ArmyController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'army_name' => $army_config->name,
+                'defense_name' => $defense_config->name,
                 'qty' => $request->qty,
-                'total_time_minutes' => (int)($army_config->time*$request->qty),
+                'total_time_minutes' => (int)($defense_config->time*$request->qty),
                 'date_init' => $init_time->format('U'),
                 'date_finish' => $finish_time->format('U')
             )
@@ -289,7 +286,4 @@ class ArmyController extends Controller
         return response()->json($data, 200);
     }
 
-    public function get_army_movement()
-    {
-    }
 }

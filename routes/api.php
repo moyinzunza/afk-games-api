@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ArmyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\DefenseController;
 use App\Http\Controllers\Api\HandshakeController;
 use App\Http\Controllers\Api\ResourcesBuildingsController;
 use App\Http\Controllers\Api\HomeController;
@@ -63,6 +64,10 @@ Route::group([
         Route::get('module/{module_id}/army', [ArmyController::class, 'get_module_army']);
         Route::post('module/{module_id}/army', [ArmyController::class, 'create_army'])->name('create_army');
         Route::post('module/{module_id}/get_army_movement', [ArmyController::class, 'get_army_movement'])->name('get_army_movement');
+
+        //Defense
+        Route::get('module/{module_id}/defense', [DefenseController::class, 'get_module_defense']);
+        Route::post('module/{module_id}/defense', [DefenseController::class, 'create_defense'])->name('create_defense');
 
     });
 });
