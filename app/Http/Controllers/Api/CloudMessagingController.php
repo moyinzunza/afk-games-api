@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Exception\Messaging\InvalidMessage;
 use App\Models\PushNotificationTokens;
 use App\Models\FailedPushNotifications;
-
-use DateTime;
 
 class CloudMessagingController extends Controller
 {
@@ -75,11 +72,4 @@ class CloudMessagingController extends Controller
         }
     }
 
-    public function clean_db_tokens(){
-
-        $date = new DateTime();
-        $date->modify("-30 day");
-        PushNotificationTokens::where('updated_at', '<', $date)->delete();
-        
-    }
 }
