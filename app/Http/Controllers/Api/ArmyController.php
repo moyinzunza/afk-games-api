@@ -289,7 +289,4 @@ class ArmyController extends Controller
         return response()->json($data, 200);
     }
 
-    public function get_army_movement()
-    {
-    }
 }

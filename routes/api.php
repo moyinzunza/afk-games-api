@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ArmyController;
+use App\Http\Controllers\Api\ArmyMovementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ModulesController;
 use App\Http\Controllers\Api\FacilitiesController;
 use App\Http\Controllers\Api\TechnologiesController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,11 +65,14 @@ Route::group([
         //Army
         Route::get('module/{module_id}/army', [ArmyController::class, 'get_module_army']);
         Route::post('module/{module_id}/army', [ArmyController::class, 'create_army'])->name('create_army');
-        Route::post('module/{module_id}/get_army_movement', [ArmyController::class, 'get_army_movement'])->name('get_army_movement');
 
         //Defense
         Route::get('module/{module_id}/defense', [DefenseController::class, 'get_module_defense']);
         Route::post('module/{module_id}/defense', [DefenseController::class, 'create_defense'])->name('create_defense');
+
+        //Army Movement
+        Route::get('module/{module_id}/army_movement', [ArmyMovementController::class, 'get_army_movement']);
+        Route::post('module/{module_id}/army_movement', [ArmyMovementController::class, 'move_army'])->name('move_army');
 
     });
 });
