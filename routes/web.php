@@ -45,6 +45,9 @@ Route::get('/cron/process_upgrades', [CronController::class, 'process_upgrades']
 //Process army line
 Route::get('/cron/process_army_line', [CronController::class, 'process_army_line'])->name('process_army_line');
 
+//Process army Movements
+Route::get('/cron/process_army_movements', [CronController::class, 'process_army_movements'])->name('process_army_movements');
+
 //Inactivate Accounts Cron
 Route::get('/cron/inactivate_accounts', [CronController::class, 'inactivate_accounts'])->name('inactivate_accounts');
 

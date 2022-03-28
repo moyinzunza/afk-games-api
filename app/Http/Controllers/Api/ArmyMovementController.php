@@ -59,6 +59,14 @@ class ArmyMovementController extends Controller
             return response()->json($data, 400);
         }
 
+        if($request->type == 'deploy' && $module_destination->user_id != Auth::id()){
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'You only can deploy to your own modules.'
+            );
+            return response()->json($data, 400);
+        }
+
         if (
             $request->resources_1_carring > $module->resources_1 ||
             $request->resources_2_carring > $module->resources_2 ||

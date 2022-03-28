@@ -9,7 +9,7 @@
     --color-black: #000;
 }
 body{
-    background-image: url(/images/bg.gif);
+    background-image: url(/images/bgn.jpg);
     background-attachment: fixed;
     background-size: cover;
     background-position: top center;
@@ -214,6 +214,9 @@ body{
     font-weight: 700;
     transition: all .5s;
 }
+.universe__left__menu ul li a.active{
+    color:var(--color-green);
+}
 .universe__left__menu ul li a:hover{
     color:var(--color-green);
 }
@@ -395,6 +398,9 @@ body{
     margin-bottom: 10px;
     cursor: pointer;
 }
+.universe__right__content__right__planets__item.active .universe__right__content__right__planets__item__content{
+    color: var(--color-green);
+}
 .universe__right__content__right__planets__item__image{
     display: inline-block;
     vertical-align: middle;
@@ -423,6 +429,7 @@ body{
 .universe__right__content__left__container__first{
     position: relative;
     margin-bottom: 10px;
+    overflow: hidden;
 }
 .universe__right__content__left__container__first > img{
     position: relative;
@@ -473,6 +480,46 @@ body{
     background: var(--color-gray);
     padding: 10px 30px;
 }
+.universe__right__content__left__container__first__popup{
+    position: absolute;
+    left: 0;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    background: var(--color-blue);
+    margin: 20px;
+    overflow: auto;
+    bottom: -100%;
+    transition: bottom .3s;
+}
+.universe__right__content__left__container__first__popup > img{
+    position: absolute;
+    width: 15px;
+    cursor: pointer;
+    right: 10px;
+    top: 10px;
+    z-index: 2;
+}
+.universe__right__content__left__container__first__popup.active{
+    bottom: 0%;
+}
+/* width */
+.universe__right__content__left__container__first__popup::-webkit-scrollbar {
+    width: 3px;
+}
+/* Track */
+.universe__right__content__left__container__first__popup::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px var(--color-green); 
+    border-radius: 10px;
+}
+/* Handle */
+.universe__right__content__left__container__first__popup::-webkit-scrollbar-thumb {
+    background:#666; 
+    border-radius: 10px;
+}
+/* Handle on hover */
+.universe__right__content__left__container__first__popup::-webkit-scrollbar-thumb:hover {
+    background: #212121; 
+}
 .universe__right__content__left__container__second{
     margin: 0px 0;
     background-color: var(--color-gray);
@@ -494,6 +541,31 @@ body{
     cursor: pointer;
     border: 5px solid var(--color-blue);
     margin-bottom: 5px;
+    position: relative;
+}
+.universe__right__content__left__container__second__img.active{
+    border: 5px solid #6e6e6e;
+}
+.universe__right__content__left__container__second__img > p{
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    position: absolute;
+    background-color: rgba(14, 20, 34, .7);
+    bottom: 0px;
+    line-height: 8px;
+    margin: 0;
+    padding: 3px 2px 3px 0;
+    left: -1px;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.universe__right__content__left__container__second__img > p > span{
+    color: var(--color-green);
+    
 }
 .universe__right__content__left__container__third{
     margin-bottom: 30px;

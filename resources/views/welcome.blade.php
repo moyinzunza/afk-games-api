@@ -1,13 +1,12 @@
 @extends('layouts.game')
 @section('content')
-<div class="universe__right__content__left__container">
+<div class="universe__right__content__left__container home">
   <div class="universe__right__content__left__container__first">
     <img src="/images/cuadro.png" alt="bg" />
     <div class="universe__right__content__left__container__first__content">
       <div class="universe__right__content__left__container__first__content__img" style="background-image: url(/images/demo.jpg);">
       </div>
       <div class="universe__right__content__left__container__first__content__text">
-        Main planet - Resources
       </div>
     </div>
   </div>
@@ -58,4 +57,13 @@
     </div>
   </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+  $(function() {
+    $(`.universe__left__menu > ul > li > a`).removeClass('active');
+    $(`.universe__left__menu > ul > li > a[href='/']`).addClass('active');
+  })
+</script>
 @endsection

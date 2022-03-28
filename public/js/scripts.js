@@ -1,6 +1,6 @@
 let removeSpaces = /^\s+$/;
 
-const getData = function (paramUrl = '', paramMtdType = '', paramData = '', paramHeaders = '', currBtn = '', paramEvent = '') {
+const getData = function (paramUrl = '', paramMtdType = '', paramData = '', paramHeaders = '', currBtn = '') {
   let lastTextBtn = currBtn != '' ? currBtn.text() : ''
   currBtn != '' ? currBtn.text('Sending...') : ''
   const getDataAsync = async function () {
@@ -20,59 +20,13 @@ const getData = function (paramUrl = '', paramMtdType = '', paramData = '', para
     const data = await response.json();
     currBtn != '' ? currBtn.prev().html('') : ''
     if (data.status.statusCode === 201 || data.status.statusCode === 200) {
-      if (paramEvent === 'register') {
-        currBtn.prev().append(`<img src="/images/close.png" class="close-errors" />`);
-        currBtn.prev().append(`<p class="success">${data.status.message}</p>`);
-        $('.universe-account-register input').val('');
-        currBtn.text(`${lastTextBtn}`)
-        currBtn.prev().fadeIn();
-      } else if (paramEvent === 'login') {
-        document.cookie = `access_token=${data.result.access_token}; expires=${new Date(data.result.expires_at)}; path=/`;
-        window.location.href = "/"
-        currBtn != '' ? currBtn.text(`${lastTextBtn}`) : ''
-      } else if (paramEvent === 'logout') {
-        window.location.href = "/login"
-      } else if (paramEvent === 'gethome') {
-        $('.universe__right__content__right__classification__items').html('')
-        Object.keys(data.result.module.resources).forEach(function (k) {
-          let template = `
-            <div class="universe__right__content__right__classification__item">
-              <div class="universe__right__content__right__classification__item__image" style="background-image: url(/images/imagedemo.jpg);">
-              </div>
-              <div class="universe__right__content__right__classification__item__content">
-                  <span class="universe__right__content__right__classification__item__content__number" 
-                    data-building-level="${data.result.module.resources[k].building_level}" 
-                    data-generate-qty-minute="${data.result.module.resources[k].generate_qty_minute}">${data.result.module.resources[k].qty}</span>
-                  <span>${k}</span>
-              </div>
-            </div>
-          `
-          $('.universe__right__content__right__classification__items').append(template)
-          //console.log(k, data.result.module.resources[k]);
-        });
-      } else if (paramEvent === 'getmodules') {
-        $('.universe__right__content__right__planets__items').html('')
-        Object.keys(data.result).forEach(function (k) {
-          //console.log(k, data.result[k]);
-          let template = `
-            <div class="universe__right__content__right__planets__item" data-id="${data.result[k].id}">
-              <div class="universe__right__content__right__planets__item__image" style="background-image: url(/images/icon_3.svg);"></div>
-              <div class="universe__right__content__right__planets__item__content">
-                <span>${data.result[k].name}</span>
-                <span>(${data.result[k].position.galaxy}.${data.result[k].position.planet}.${data.result[k].position.solar_system})</span>
-              </div>
-            </div>
-          `
-          $('.universe__right__content__right__planets__items').append(template)
-        });
-      }
+      return data;
     } else {
       currBtn != '' ? currBtn.prev().append(`<img src="/images/close.png" class="close-errors" />`) : ''
       currBtn != '' ? currBtn.prev().append(`<p class="error">${data.status.message}</p>`) : ''
       if (data.result) {
         Object.keys(data.result.errors).forEach(function (k) {
           currBtn != '' ? currBtn.prev().append(`<p class="error">x ${data.result.errors[k]}</p>`) : ''
-          //console.log(k, data.result.errors[k]);
         });
       }
       currBtn != '' ? currBtn.prev().fadeIn() : ''
@@ -83,7 +37,7 @@ const getData = function (paramUrl = '', paramMtdType = '', paramData = '', para
       }
     }
   }
-  getDataAsync();
+  return getDataAsync();
 }
 
 function getCookie(name) {
@@ -100,7 +54,15 @@ function deleteCookie(name) {
   document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-const register = function (thisElement) {
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+const register = async function (thisElement) {
+  let lastTextBtn = $(thisElement) != '' ? $(thisElement).text() : ''
   if ($('#register-password').val() != $('#register-password-1').val() || $('#register-password').val() === '' || removeSpaces.test($('#register-password').val())) {
     $(thisElement).prev().fadeIn();
     $(thisElement).prev().html('');
@@ -118,11 +80,18 @@ const register = function (thisElement) {
   let headers = {
     'Content-Type': 'application/json'
   }
-  getData('http://universe.artificialrevenge.com/api/signup', 'POST', data, headers, $(thisElement), 'register')
+  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/signup', 'POST', data, headers, $(thisElement))
+  $(thisElement).prev().append(`<img src="/images/close.png" class="close-errors" />`);
+  $(thisElement).prev().append(`<p class="success">${currDataAwait.status.message}</p>`);
+  $('.universe-account-register input').val('');
+  $(thisElement).text(`${lastTextBtn}`)
+  $(thisElement).prev().fadeIn();
+
 }
 
-const login = function (thisElement) {
+const login = async function (thisElement) {
   let rememberMe = false
+  let lastTextBtn = $(thisElement) != '' ? $(thisElement).text() : ''
   if ($('#login-remember-me').is(':checked')) {
     rememberMe = true
   }
@@ -134,37 +103,110 @@ const login = function (thisElement) {
   let headers = {
     'Content-Type': 'application/json'
   }
-  getData('http://universe.artificialrevenge.com/api/login', 'POST', data, headers, $(thisElement), 'login')
+  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/login', 'POST', data, headers, $(thisElement))
+  document.cookie = `access_token=${currDataAwait.result.access_token}; expires=${new Date(currDataAwait.result.expires_at)}; path=/`;
+  window.location.href = "/"
+  $(thisElement) != '' ? $(thisElement).text(`${lastTextBtn}`) : ''
 }
 
-const logout = function () {
+const logout = async function () {
   let currToken = getCookie("access_token");
   let headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  getData('http://universe.artificialrevenge.com/api/logout', 'POST', '', headers, '', 'logout')
+  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/logout', 'POST', '', headers, '')
   deleteCookie('access_token')
+  window.location.href = "/login"
 }
 
-const getHome = function () {
+const getHome = async function () {
   let currToken = getCookie("access_token");
   let headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  getData('http://universe.artificialrevenge.com/api/home', 'GET', '', headers, '', 'gethome')
+  let cookieExist = getCookie("cookie_current_module_id");
+  let currDataAwait;
+  if (cookieExist) {
+    currDataAwait = await getData(`http://universe.artificialrevenge.com/api/home?module=${cookieExist}`, 'GET', '', headers, '');
+  } else {
+    currDataAwait = await getData('http://universe.artificialrevenge.com/api/home', 'GET', '', headers, '');
+  }
+  let defaultModuleID = currDataAwait.result.module.id;
+  let cookieModuleID = getCookie("cookie_current_module_id");
+  if (defaultModuleID === Number(cookieModuleID)) {
+    document.cookie = `cookie_current_module_id=${defaultModuleID}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+  } else {
+    document.cookie = `cookie_current_module_id=${cookieModuleID}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+  }
+  let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
+  $('.universe__right__content__left__container__first__content__text').text(currDataAwait.result.module.name);
+  $(`.universe__right__content__right__planets__item`).removeClass('active');
+  $(`.universe__right__content__right__planets__item[data-id=${cookieModuleIDUpdate}]`).addClass('active');
+  $('.universe__right__content__right__classification__items').html('')
+  Object.keys(currDataAwait.result.module.resources).forEach(function (k) {
+    let template = `
+          <div class="universe__right__content__right__classification__item">
+            <div class="universe__right__content__right__classification__item__image" style="background-image: url(${currDataAwait.result.module.resources[k].image});">
+            </div>
+            <div class="universe__right__content__right__classification__item__content">
+                <span class="universe__right__content__right__classification__item__content__number" 
+                  data-building-level="${currDataAwait.result.module.resources[k].building_level}" 
+                  data-generate-qty-minute="${currDataAwait.result.module.resources[k].generate_qty_minute}">${currDataAwait.result.module.resources[k].qty}</span>
+                <span>${k}</span>
+            </div>
+          </div>
+        `
+    $('.universe__right__content__right__classification__items').append(template)
+  });
 }
 
-const getModules = function () {
+const getModules = async function () {
   let currToken = getCookie("access_token");
   let headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  getData('http://universe.artificialrevenge.com/api/get_modules', 'GET', '', headers, '', 'getmodules')
+  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/get_modules', 'GET', '', headers, '')
+  $('.universe__right__content__right__planets__items').html('')
+  Object.keys(currDataAwait.result).forEach(function (k) {
+    let template = `
+            <div class="universe__right__content__right__planets__item" data-id="${currDataAwait.result[k].id}">
+              <div class="universe__right__content__right__planets__item__image" style="background-image: url(/images/icon_3.svg);"></div>
+              <div class="universe__right__content__right__planets__item__content">
+                <span>${currDataAwait.result[k].name}</span>
+                <span>(${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.planet}.${currDataAwait.result[k].position.solar_system})</span>
+              </div>
+            </div>
+          `
+    $('.universe__right__content__right__planets__items').append(template)
+  });
 }
 
+const getResources = async function () {
+  let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
+  let currToken = getCookie("access_token");
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${currToken}`
+  }
+  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/resources`, 'GET', '', headers, '')
+  $('.universe__right__content__left__container__second.resources').html('');
+  Object.keys(currDataAwait.result.levels).forEach(function (k) {
+    let template = `
+      <div class="universe__right__content__left__container__second__img" 
+        data-level-id="${currDataAwait.result.levels[k].id}"
+        data-json='${JSON.stringify(currDataAwait.result.levels[k])}'
+        style="background-image: url(${currDataAwait.result.levels[k].image});">
+        <p>
+        <span>${currDataAwait.result.levels[k].level}</span>  ${currDataAwait.result.levels[k].name}
+        </p>
+      </div>
+      `
+    $('.universe__right__content__left__container__second.resources').append(template)
+  });
+}
 
 const updateResorces60seconds = function () {
   setInterval(function () {
@@ -182,6 +224,30 @@ const closeErrorsContent = function (thisElement) {
   $(thisElement).parent().html('');
 }
 
+const showDetailsResources = function (thisElement) {
+  if ($(thisElement).attr('data-json')) {
+    $('.universe__right__content__left__container__second__img').removeClass('active');
+    $(thisElement).addClass('active')
+    let currJson = JSON.parse($(thisElement).attr('data-json'));
+    $('.universe__right__content__left__container__first__popup').html('');
+    $('.universe__right__content__left__container__first__popup').addClass('active');
+    let template = `
+    <img src="/images/cancel.png" alt="x"/>
+    <div>
+       Hola
+    </div>
+  `
+    $('.universe__right__content__left__container__first__popup').html(template);
+    console.log(currJson);
+  }
+}
+
+const hideDetailsResources = function () {
+  $('.universe__right__content__left__container__first__popup').removeClass('active');
+  $('.universe__right__content__left__container__second__img').removeClass('active');
+  $('.universe__right__content__left__container__first__popup').html('');
+}
+
 $(function () {
 
   getHome();
@@ -189,6 +255,10 @@ $(function () {
   updateResorces60seconds();
 
   getModules();
+
+  if ($('.universe__right__content__left__container').hasClass('resources')) {
+    getResources();
+  }
 
   $(document).on('click', '#btn-login', function () {
     login(this);
@@ -205,6 +275,25 @@ $(function () {
 
   $(document).on('click', '.universe-account-errors .close-errors', function () {
     closeErrorsContent(this);
+  })
+
+  $(document).on('click', '.universe__right__content__right__planets__item', function () {
+    let currId = $(this).attr('data-id');
+    deleteCookie('cookie_current_module_id');
+    setCookie('cookie_current_module_id', currId, 3600);
+    $(`.universe__right__content__right__planets__item`).removeClass('active');
+    $(this).addClass('active');
+    getHome();
+    getResources();
+    hideDetailsResources();
+  })
+
+  $(document).on('click', '.universe__right__content__left__container__second__img', function () {
+    showDetailsResources(this);
+  })
+
+  $(document).on('click', '.universe__right__content__left__container__first__popup > img', function () {
+    hideDetailsResources();
   })
 
 })

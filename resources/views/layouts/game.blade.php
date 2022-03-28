@@ -26,37 +26,37 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/resources">
                             Resources
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/merchant">
                             Merchant
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/research">
                             Research
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/hangar">
                             Hangar
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/defending">
                             Defending
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/fleet">
                             Fleet
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a href="/galaxy">
                             Galaxy
                         </a>
                     </li>
@@ -159,6 +159,7 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/scripts.js"></script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    @yield('scripts')
 </body>
 
 </html>

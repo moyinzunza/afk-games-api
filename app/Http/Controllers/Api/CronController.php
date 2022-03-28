@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\ArmyGroups;
 use App\Models\UsersTechnologies;
 use App\Models\Modules;
 use App\Models\Resources;
 use App\Models\User;
 use App\Models\ArmyLine;
+use App\Models\ArmyMovement;
 use App\Models\PushNotificationTokens;
 use App\Models\UpgradesLine;
 use App\Models\UsersArmy;
 use App\Models\UsersDefense;
 use App\Models\UsersFacilities;
+use DateInterval;
 use DateTime;
 
 class CronController extends Controller
 {
-
     public function update_resources()
     {
         //runs every minute
@@ -141,5 +143,148 @@ class CronController extends Controller
         $data['status'] = "success";
         $data['msg'] = 'Army line processed: ' . count($army_line);
         return response()->json($data, 200);
+    }
+
+    public function process_army_movements()
+    {
+        $date = new DateTime();
+        $army_movements = ArmyMovement::where('finish_at', '<', $date)->get();
+
+        foreach ($army_movements as $army_movement) {
+
+            if ($army_movement->type == 'go_back') {
+                $module = Modules::where('id', $army_movement->module_id)->first();
+                if (!empty($module)) {
+                    $module->resources_1 += $army_movement->resources_1_carring;
+                    $module->resources_2 += $army_movement->resources_2_carring;
+                    $module->resources_3 += $army_movement->resources_3_carring;
+                    $module->save();
+
+                    $groups = ArmyGroups::where('group_id', $army_movement->army_group_id)->get();
+                    foreach ($groups as $group) {
+                        $user_army = UsersArmy::where('module_id', $army_movement->module_id)->where('army_id', $group->army_id)->first();
+                        if (!empty($user_army)) {
+                            $user_army->qty += $group->qty;
+                            $user_army->save();
+                        } else {
+                            UsersArmy::create([
+                                'user_id' => $module->user_id,
+                                'army_id' => $group->army_id,
+                                'module_id' => $module->id,
+                                'qty' => $group->qty
+                            ]);
+                        }
+                        $group->delete();
+                    }
+                }
+                $army_movement->delete();
+
+                //create notification
+            }
+
+            if ($army_movement->type == 'deploy') {
+                $module = Modules::where('id', $army_movement->module_id_destination)->first();
+                if (!empty($module)) {
+                    $module->resources_1 += $army_movement->resources_1_carring;
+                    $module->resources_2 += $army_movement->resources_2_carring;
+                    $module->resources_3 += $army_movement->resources_3_carring;
+                    $module->save();
+
+                    $groups = ArmyGroups::where('group_id', $army_movement->army_group_id)->get();
+                    foreach ($groups as $group) {
+                        $user_army = UsersArmy::where('module_id', $army_movement->module_id_destination)->where('army_id', $group->army_id)->first();
+                        if (!empty($user_army)) {
+                            $user_army->qty += $group->qty;
+                            $user_army->save();
+                        } else {
+                            UsersArmy::create([
+                                'user_id' => $module->user_id,
+                                'army_id' => $group->army_id,
+                                'module_id' => $module->id,
+                                'qty' => $group->qty
+                            ]);
+                        }
+                        $group->delete();
+                    }
+                }
+                $army_movement->delete();
+
+                //create notification
+            }
+
+            if ($army_movement->type == 'transport') {
+                $module = Modules::where('id', $army_movement->module_id_destination)->first();
+                if (!empty($module)) {
+                    $module->resources_1 += $army_movement->resources_1_carring;
+                    $module->resources_2 += $army_movement->resources_2_carring;
+                    $module->resources_3 += $army_movement->resources_3_carring;
+                    $module->save();
+                }
+
+                $start_at = new DateTime($army_movement->start_at);
+                $end_date = new DateTime($army_movement->finish_at);
+
+                $interval = $start_at->diff($end_date);
+                $diffInMinutes = $interval->days * 24 * 60;
+                $diffInMinutes += $interval->h * 60;
+                $diffInMinutes += $interval->i;
+
+                $finish_time = new DateTime($army_movement->finish_at);
+                $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                $army_movement->resources_1_carring = 0;
+                $army_movement->resources_2_carring = 0;
+                $army_movement->resources_3_carring = 0;
+                $army_movement->type = 'go_back';
+                $army_movement->start_at = $army_movement->finish_at;
+                $army_movement->finish_at = $finish_time;
+                $army_movement->save();
+                //create notification
+            }
+
+            if ($army_movement->type == 'spy') {
+                $module = Modules::where('id', $army_movement->module_id_destination)->first();
+
+                $start_at = new DateTime($army_movement->start_at);
+                $end_date = new DateTime($army_movement->finish_at);
+
+                $interval = $start_at->diff($end_date);
+                $diffInMinutes = $interval->days * 24 * 60;
+                $diffInMinutes += $interval->h * 60;
+                $diffInMinutes += $interval->i;
+
+                $finish_time = new DateTime($army_movement->finish_at);
+                $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                $army_movement->type = 'go_back';
+                $army_movement->start_at = $army_movement->finish_at;
+                $army_movement->finish_at = $finish_time;
+                $army_movement->save();
+                //create notification
+            }
+
+
+            if ($army_movement->type == 'attack') {
+                $module = Modules::where('id', $army_movement->module_id_destination)->first();
+
+                $start_at = new DateTime($army_movement->start_at);
+                $end_date = new DateTime($army_movement->finish_at);
+
+                $interval = $start_at->diff($end_date);
+                $diffInMinutes = $interval->days * 24 * 60;
+                $diffInMinutes += $interval->h * 60;
+                $diffInMinutes += $interval->i;
+
+                $finish_time = new DateTime($army_movement->finish_at);
+                $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                $army_movement->type = 'go_back';
+                $army_movement->start_at = $army_movement->finish_at;
+                $army_movement->finish_at = $finish_time;
+                $army_movement->save();
+                //create notification
+                //generate report
+            }
+        }
     }
 }
