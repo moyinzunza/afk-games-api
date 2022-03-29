@@ -31,28 +31,28 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/merchant">
-                            Merchant
+                        <a href="/facilities">
+                            Facilities
                         </a>
                     </li>
                     <li>
-                        <a href="/research">
-                            Research
+                        <a href="/technologies">
+                            Technologies
                         </a>
                     </li>
                     <li>
-                        <a href="/hangar">
-                            Hangar
+                        <a href="/army">
+                            Army
                         </a>
                     </li>
                     <li>
-                        <a href="/defending">
-                            Defending
+                        <a href="/defense">
+                            Defense
                         </a>
                     </li>
                     <li>
-                        <a href="/fleet">
-                            Fleet
+                        <a href="/army_movement">
+                            Fleet Movement
                         </a>
                     </li>
                     <li>

@@ -17,21 +17,40 @@ use App\Http\Controllers\Api\CronController;
 
 //routes for webviews
 Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+    return view('home');
+})->name('home');
 
 Route::get('/login', function () {
     return view('login');
 })->name('login');
 
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
-
 Route::get('/resources', function () {
     return view('resources');
 })->name('resources');
 
+Route::get('/facilities', function () {
+    return view('facilities');
+})->name('facilities');
+
+Route::get('/technologies', function () {
+    return view('technologies');
+})->name('technologies');
+
+Route::get('/army', function () {
+    return view('army');
+})->name('army');
+
+Route::get('/defense', function () {
+    return view('defense');
+})->name('defense');
+
+Route::get('/army_movement', function () {
+    return view('army_movement');
+})->name('army_movement');
+
+Route::get('/galaxy', function () {
+    return view('map');
+})->name('map');
 
 //Resources Api Cron
 Route::get('/cron/update_resources', [CronController::class, 'update_resources'])->name('update_resources');
