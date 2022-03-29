@@ -293,7 +293,7 @@ class CronController extends Controller
                     }
                     
                     Modules::create([
-                        'user_id' => $army_movement->id,
+                        'user_id' => $army_movement->user_id,
                         'name' => 'colony',
                         'construction_space' => rand(150, 300),
                         'resources_1' => 500,

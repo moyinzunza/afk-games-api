@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ResourcesBuildingsController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ModulesController;
 use App\Http\Controllers\Api\FacilitiesController;
+use App\Http\Controllers\Api\MapController;
 use App\Http\Controllers\Api\TechnologiesController;
 
 /*
@@ -73,6 +74,9 @@ Route::group([
         //Army Movement
         Route::get('module/{module_id}/army_movement', [ArmyMovementController::class, 'get_army_movement']);
         Route::post('module/{module_id}/army_movement', [ArmyMovementController::class, 'move_army'])->name('move_army');
+
+        //Map
+        Route::get('module/{module_id}/map', [MapController::class, 'get_map']);
 
     });
 });
