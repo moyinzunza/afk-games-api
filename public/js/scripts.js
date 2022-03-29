@@ -86,7 +86,6 @@ const register = async function (thisElement) {
   $('.universe-account-register input').val('');
   $(thisElement).text(`${lastTextBtn}`)
   $(thisElement).prev().fadeIn();
-
 }
 
 const login = async function (thisElement) {
@@ -153,7 +152,11 @@ const getHome = async function () {
             <div class="universe__right__content__right__classification__item__content">
                 <span class="universe__right__content__right__classification__item__content__number" 
                   data-building-level="${currDataAwait.result.module.resources[k].building_level}" 
-                  data-generate-qty-minute="${currDataAwait.result.module.resources[k].generate_qty_minute}">${currDataAwait.result.module.resources[k].qty}</span>
+                  data-generate-qty-minute="${currDataAwait.result.module.resources[k].generate_qty_minute}"
+                  data-${k.toLocaleUpperCase()}="${currDataAwait.result.module.resources[k].qty}"
+                  >
+                  ${currDataAwait.result.module.resources[k].qty}
+                </span>
                 <span>${k}</span>
             </div>
           </div>
@@ -187,11 +190,13 @@ const getModules = async function () {
 const getResources = async function () {
   let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
   let currToken = getCookie("access_token");
+  $('.universe__right__content__left__container__third__section.resources').removeClass('active');
   let headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
   let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/resources`, 'GET', '', headers, '')
+  $('.universe__right__content__left__container__first__content__img').css('background-image', `url(${currDataAwait.result.image})`);
   $('.universe__right__content__left__container__second.resources').html('');
   Object.keys(currDataAwait.result.levels).forEach(function (k) {
     let template = `
@@ -205,6 +210,51 @@ const getResources = async function () {
       </div>
       `
     $('.universe__right__content__left__container__second.resources').append(template)
+  });
+  $('.universe__right__content__left__container__third__section__content__corners__buildings').html('');
+  Object.keys(currDataAwait.result.upgrades_line).forEach(function (k) {
+    $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.upgrades_line[k].building_id}"]`).attr('isUpgraded', '1');
+    let templateBuilding = `
+       <div data-leve-id="${currDataAwait.result.upgrades_line[k].building_id}" >
+        <img src="${currDataAwait.result.upgrades_line[k].image}" alt="Build" />
+        <div>
+          <p>
+            <b>${currDataAwait.result.upgrades_line[k].building_upgrade} (<span class="green">Level ${currDataAwait.result.upgrades_line[k].next_level}</span>)</b><br />
+            <span class="span-counter-upgraded" 
+              id="clock-${currDataAwait.result.upgrades_line[k].building_id}" 
+              data-id="${currDataAwait.result.upgrades_line[k].building_id}" 
+              data-date-init="${currDataAwait.result.upgrades_line[k].date_init}"
+              data-date-finish="${currDataAwait.result.upgrades_line[k].date_finish}"
+              ></span>
+          </p>
+        <div>
+       </div>
+    `;
+    $('.universe__right__content__left__container__third__section__content__corners__buildings').append(templateBuilding)
+  });
+  if (currDataAwait.result.upgrades_line.length > 0) {
+    $('.universe__right__content__left__container__third__section.resources').addClass('active');
+  }
+  $(".span-counter-upgraded").each(function (index) {
+    let dataFinishUnixTimestamp = $(this).attr('data-date-finish');
+    let dataFinishMilliseconds = dataFinishUnixTimestamp * 1000;
+    let currDateFinish = new Date(dataFinishMilliseconds);
+    let currID = $(this).attr('data-id');
+    $(`#clock-${currID}`).countdown(currDateFinish, function (event) {
+      if (event.strftime('%D') == 00) {
+        $(this).html(event.strftime('%H:%M:%S'));
+      } else {
+        $(this).html(event.strftime('%D Days %H:%M:%S'));
+      }
+      if (event.strftime('%D') == 00 &&
+        event.strftime('%H') == 00 &&
+        event.strftime('%M') == 00 &&
+        event.strftime('%S') == 00) {
+        setTimeout(function () {
+          location.reload();
+        }, 5000);
+      }
+    });
   });
 }
 
@@ -234,12 +284,51 @@ const showDetailsResources = function (thisElement) {
     let template = `
     <img src="/images/cancel.png" alt="x"/>
     <div>
-       Hola
+      <img src="${currJson.image}" alt="image"/>
+      <div>
+        <p class="name"><b>${currJson.name} (<span class="green">${currJson.level}</span>)</b></p>
+        <hr />
+        <p><b>Next level (<span class="green">${currJson.level + 1}</span>)</b></p>
+        <span>
+          Time: <b>${currJson.next_level_price_time.time_minutes} minutes</b><br />
+          Mineral: <b>${currJson.next_level_price_time.mineral}</b> <br />
+          Cristal: <b>${currJson.next_level_price_time.crystal}</b> <br />
+          Fuel: <b>${currJson.next_level_price_time.fuel}</b>
+        </span>
+        <br /><br />
+        <button data-id="${currJson.id}" class="btn btn-upgrade">
+        UPGRADE
+        </button>
+      </div>
     </div>
   `
     $('.universe__right__content__left__container__first__popup').html(template);
-    console.log(currJson);
+    let currIsUpgraded = $(thisElement).attr('isupgraded')
+    if (currIsUpgraded === '1') $(`.btn-upgrade[data-id="${currJson.id}"] `).prop('disabled', true);
+    let currMineral = $(`.universe__right__content__right__classification__item__content__number[data-mineral]`).attr('data-mineral');
+    let currCrystal = $(`.universe__right__content__right__classification__item__content__number[data-crystal]`).attr('data-crystal');
+    let currFuel = $(`.universe__right__content__right__classification__item__content__number[data-fuel]`).attr('data-fuel');
+    if (currMineral < currJson.next_level_price_time.mineral ||
+      currCrystal < currJson.next_level_price_time.crystal ||
+      currFuel < currJson.next_level_price_time.fuel) {
+      $(`.btn-upgrade[data-id="${currJson.id}"] `).prop('disabled', true);
+    }
   }
+}
+
+const upgrade = async function (currLevelID, thisElement) {
+  let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
+  let currToken = getCookie("access_token");
+  let data = {
+    "building_id": currLevelID
+  }
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${currToken}`
+  }
+  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/resources`, 'POST', data, headers, '');
+  thisElement.prop('disabled', true);
+  location.reload();
 }
 
 const hideDetailsResources = function () {
@@ -294,6 +383,13 @@ $(function () {
 
   $(document).on('click', '.universe__right__content__left__container__first__popup > img', function () {
     hideDetailsResources();
+  })
+
+  $(document).on('click', '.btn-upgrade', function () {
+    let currLeveID = $(this).attr('data-id');
+    console.log('click')
+    console.log(currLeveID)
+    upgrade(currLeveID, $(this));
   })
 
 })

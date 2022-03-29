@@ -25,11 +25,13 @@ class ArmyMovementController extends Controller
             'army' => 'required|array',
             'army.*.id' => 'required|integer|between:1,' . count($army_config),
             'army.*.qty' => 'required|integer',
-            'module_id_destination' => 'required|integer',
+            'position_x' => 'required|integer|between:1,11',
+            'position_y' => 'required|integer|between:1,300',
+            'position_z' => 'required|integer|between:1,10',
             'resources_1_carring' => 'required|integer',
             'resources_2_carring' => 'required|integer',
             'resources_3_carring' => 'required|integer',
-            'type' => 'required|in:attack,spy,deploy,transport',
+            'type' => 'required|in:attack,spy,deploy,transport,colonize',
         ]);
 
         if ($validator->fails()) {
@@ -50,19 +52,73 @@ class ArmyMovementController extends Controller
             return response()->json($data, 400);
         }
 
-        $module_destination = Modules::where('id', $request->module_id_destination)->first();
-        if (empty($module_destination)) {
+        $user_id_destination = 0;
+        $module_id_destination = 0;
+
+        $module_destination = Modules::where('position_x', $request->position_x)->where('position_y', $request->position_y)->where('position_z', $request->position_z)->first();
+        if (empty($module_destination) && $request->type != 'colonize') {
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'Not module destination found.'
             );
             return response()->json($data, 400);
         }
+        if (!empty($module_destination)) {
+            $user_id_destination = $module_destination->user_id;
+            $module_id_destination = $module_destination->module_id;
+        }
+        if (empty($module_destination) && $request->type == 'colonize') {
 
-        if($request->type == 'deploy' && $module_destination->user_id != Auth::id()){
+            $army_count = 0;
+            $army_id = 0;
+            foreach ($request->army as $units) {
+                $army_id = $units['id'];
+                $army_count += $units['qty'];
+            }
+            if ($army_count == 1) {
+                $colonizer = Army::where('id', $army_id)->first();
+                if (!empty($colonizer)) {
+                    if ($colonizer->type != 'colonize') {
+                        $data['status'] = array(
+                            'statusCode' => 400,
+                            'message' => 'Colonizer needed.'
+                        );
+                        return response()->json($data, 400);
+                    }
+                } else {
+                    $data['status'] = array(
+                        'statusCode' => 400,
+                        'message' => 'Unit dont exist.'
+                    );
+                    return response()->json($data, 400);
+                }
+            } else {
+                $data['status'] = array(
+                    'statusCode' => 400,
+                    'message' => 'You only can send 1 colonizer.'
+                );
+                return response()->json($data, 400);
+            }
+        } else {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'Module exist cant colonize.'
+            );
+            return response()->json($data, 400);
+        }
+
+        if ($request->type == 'deploy' && $module_destination->user_id != Auth::id()) {
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'You only can deploy to your own modules.'
+            );
+            return response()->json($data, 400);
+        }
+
+        if ($request->type == 'attack' && $module_destination->user_id == Auth::id()) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => 'You cant attack your own modules.'
             );
             return response()->json($data, 400);
         }
@@ -117,7 +173,7 @@ class ArmyMovementController extends Controller
             return response()->json($data, 400);
         }
 
-        $distance_between_modules = sqrt(pow($module->position_x - $module_destination->position_x, 2) + pow($module->position_y - $module_destination->position_y, 2) + pow($module->position_z - $module_destination->position_z, 2));
+        $distance_between_modules = sqrt(pow($module->position_x - $request->position_x, 2) + pow($module->position_y - $request->position_y, 2) + pow($module->position_z - $request->position_z, 2));
         $distance_between_modules *= 10000;
         $distance_between_modules = floor($distance_between_modules);
 
@@ -145,9 +201,12 @@ class ArmyMovementController extends Controller
         $finish_time->add(new DateInterval('PT' . (int)($minutes_to_reach_objetive) . 'M'));
         ArmyMovement::create([
             'user_id' => Auth::id(),
-            'user_id_destination' => $module_destination->user_id,
+            'user_id_destination' => $user_id_destination,
             'module_id' => $module_id,
-            'module_id_destination' => $request->module_id_destination,
+            'module_id_destination' => $module_id_destination,
+            'position_x' => $request->position_x,
+            'position_y' => $request->position_y,
+            'position_z' => $request->position_z,
             'army_group_id' => $army_group_id,
             'type' => $request->type,
             'resources_1_carring' => $request->resources_1_carring,
@@ -180,7 +239,6 @@ class ArmyMovementController extends Controller
             )
         );
         return response()->json($data, 200);
-        
     }
 
     public function get_army_movement($module_id)
@@ -190,13 +248,13 @@ class ArmyMovementController extends Controller
 
         $army_movement_array = array();
 
-        foreach($army_movement as $movement){
+        foreach ($army_movement as $movement) {
 
             $group = ArmyGroups::where('group_id', $movement->army_group_id)->get();
             $group_array = array();
             $total_group_qty = 0;
 
-            foreach($group as $single_group){
+            foreach ($group as $single_group) {
 
                 array_push($group_array, array(
                     'name' => Army::where('id', $single_group->army_id)->first()->name,
@@ -204,7 +262,6 @@ class ArmyMovementController extends Controller
                 ));
 
                 $total_group_qty += $single_group->qty;
-
             }
 
             $init_unix_date = new DateTime($movement->start_at);
@@ -214,6 +271,10 @@ class ArmyMovementController extends Controller
 
             $module_origin = Modules::where('id', $movement->module_id)->first();
             $module_destination = Modules::where('id', $movement->module_id_destination)->first();
+            $module_destination_name = '';
+            if (!empty($module_destination)) {
+                $module_destination_name = $module_destination->name;
+            }
 
             $single_army = array(
                 'id' => $movement->id,
@@ -228,11 +289,11 @@ class ArmyMovementController extends Controller
                     )
                 ),
                 'module_destination' => array(
-                    'name' => $module_destination->name,
+                    'name' => $module_destination_name,
                     'position' => array(
-                        'galaxy' => $module_destination->position_z,
-                        'solar_system' => $module_destination->position_x,
-                        'planet' => $module_destination->position_y
+                        'galaxy' => $movement->position_z,
+                        'solar_system' => $movement->position_x,
+                        'planet' => $movement->position_y
                     )
                 ),
                 'army_group_id' => $movement->army_group_id,
@@ -244,11 +305,9 @@ class ArmyMovementController extends Controller
                 'date_init' => $init_unix_date,
                 'date_finish' => $end_unix_date,
                 'group' => $group_array
-            );     
-            
+            );
+
             array_push($army_movement_array, $single_army);
-
-
         }
 
         $data['status'] = array(

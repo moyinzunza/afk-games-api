@@ -147,6 +147,7 @@ class CronController extends Controller
 
     public function process_army_movements()
     {
+        //runs every 5 seconds
         $date = new DateTime();
         $army_movements = ArmyMovement::where('finish_at', '<', $date)->get();
 
@@ -261,6 +262,54 @@ class CronController extends Controller
                 $army_movement->finish_at = $finish_time;
                 $army_movement->save();
                 //create notification
+                //generate report
+            }
+
+
+            if ($army_movement->type == 'colonize') {
+                //check if module exist, if exist go back
+                $module = Modules::where('position_x', $army_movement->position_x)->where('position_y', $army_movement->position_y)->where('position_z', $army_movement->position_z)->first();
+                if (!empty($module)) {
+                    $start_at = new DateTime($army_movement->start_at);
+                    $end_date = new DateTime($army_movement->finish_at);
+
+                    $interval = $start_at->diff($end_date);
+                    $diffInMinutes = $interval->days * 24 * 60;
+                    $diffInMinutes += $interval->h * 60;
+                    $diffInMinutes += $interval->i;
+
+                    $finish_time = new DateTime($army_movement->finish_at);
+                    $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                    $army_movement->type = 'go_back';
+                    $army_movement->start_at = $army_movement->finish_at;
+                    $army_movement->finish_at = $finish_time;
+                    $army_movement->save();
+                } else {
+
+                    $groups = ArmyGroups::where('group_id', $army_movement->army_group_id)->get();
+                    foreach ($groups as $group) {
+                        $group->delete();
+                    }
+                    
+                    Modules::create([
+                        'user_id' => $army_movement->id,
+                        'name' => 'colony',
+                        'construction_space' => rand(150, 300),
+                        'resources_1' => 500,
+                        'resources_2' => 500,
+                        'resources_3' => 500,
+                        'resources_building_lvl_1' => 0,
+                        'resources_building_lvl_2' => 0,
+                        'resources_building_lvl_3' => 0,
+                        'position_x' => $army_movement->position_x,
+                        'position_y' => $army_movement->position_y,
+                        'position_z' => $army_movement->position_z
+                    ]);
+                    $army_movement->delete();
+                }
+                //create notification
+                //generate report
             }
 
 

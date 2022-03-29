@@ -40,8 +40,6 @@ class ResourcesBuildingsController extends Controller
         return response()->json($data, 200);
     }
 
-
-
     public function get_module_resources($module_id)
     {
         $config_resources = json_decode(Resources::get());
@@ -59,12 +57,13 @@ class ResourcesBuildingsController extends Controller
                 $end_unix_date = new DateTime($upgrades_line->finish_at);
                 $end_unix_date = $end_unix_date->format('U');
 
-                $total_time_minutes = ($end_unix_date - $init_unix_date)/60;
+                $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_upgrade = array(
+                    'image' => $config_resources[$upgrades_line->upgrade_id-1]->image_url,
                     'building_id' => $upgrades_line->upgrade_id,
                     'building_upgrade' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
-                    'next_level' => $module->{'resources_building_lvl_'.$upgrades_line->upgrade_id} + 1,
+                    'next_level' => $module->{'resources_building_lvl_' . $upgrades_line->upgrade_id} + 1,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
                     'date_finish' => $end_unix_date
@@ -73,7 +72,9 @@ class ResourcesBuildingsController extends Controller
                 array_push($upgrade_line, $single_upgrade);
             }
 
+            //edit images for modules
             $module_info = array(
+                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -85,7 +86,7 @@ class ResourcesBuildingsController extends Controller
                     array(
                         'id' => 1,
                         //'name' => $config_resources[0]->name,
-                        'name' => $config_resources[0]->name.' mine',
+                        'name' => $config_resources[0]->name . ' mine',
                         'image' => $config_resources[0]->image_url,
                         'level' => $module->resources_building_lvl_1,
                         'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(1, $module->resources_building_lvl_1 + 1),
@@ -94,7 +95,7 @@ class ResourcesBuildingsController extends Controller
                     array(
                         'id' => 2,
                         //'name' => $config_resources[1]->name,
-                        'name' => $config_resources[1]->name.' mine',
+                        'name' => $config_resources[1]->name . ' mine',
                         'image' => $config_resources[1]->image_url,
                         'level' => $module->resources_building_lvl_2,
                         'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(2, $module->resources_building_lvl_2 + 1),

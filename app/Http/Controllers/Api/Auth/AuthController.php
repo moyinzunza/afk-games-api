@@ -81,13 +81,13 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         $position_x = rand(1, 11);
-        $position_y = rand(1, 250);
+        $position_y = rand(1, 300);
         $position_z = 1;
         $module_exist = Modules::where('position_x', $position_x)->where('position_y', $position_y)->where('position_z', $position_z);
 
         while (empty($module_exist)) {
             $position_x = rand(1, 11);
-            $position_y = rand(1, 250);
+            $position_y = rand(1, 300);
             $position_z = 1;
             $module_exist = Modules::where('position_x', $position_x)->where('position_y', $position_y)->where('position_z', $position_z);
         }

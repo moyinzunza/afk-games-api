@@ -143,6 +143,10 @@ body{
     background: transparent;
     color: var(--color-gray-lite);
 }
+.btn:disabled {
+    background: #dddddd;
+    cursor: none;
+}
 .universe-account-errors{
     padding: 20px;
     display: none;
@@ -520,6 +524,23 @@ body{
 .universe__right__content__left__container__first__popup::-webkit-scrollbar-thumb:hover {
     background: #212121; 
 }
+.universe__right__content__left__container__first__popup > div{
+    color: #fff;
+}
+.universe__right__content__left__container__first__popup > div > img{
+    max-width: 300px;
+    padding: 15px;
+}
+.universe__right__content__left__container__first__popup > div > div{
+    color: #fff;
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    max-width: calc(100% - 360px);
+}
+.universe__right__content__left__container__first__popup > div > div .name{
+    text-transform: capitalize;
+}
 .universe__right__content__left__container__second{
     margin: 0px 0;
     background-color: var(--color-gray);
@@ -580,6 +601,14 @@ body{
     color: var(--color-gray-lite);
     position: relative;
     vertical-align: top;
+    width: 100%;
+}
+.universe__right__content__left__container__third__section.resources{
+    display: none;
+}
+
+.universe__right__content__left__container__third__section.resources.active{
+    display: inline-block;
 }
 .universe__right__content__left__container__third .universe__right__content__left__container__third__section:nth-child(odd){
   margin-right: 5px;
@@ -619,4 +648,26 @@ body{
 }
 .universe__right__content__left__container__third__section__content__corners > img{
     max-width: 15px;
+}
+.universe__right__content__left__container__third__section__content__corners__buildings > div{
+    margin: 5px 0;
+}
+.universe__right__content__left__container__third__section__content__corners__buildings > div > img {
+  display: inline-block;
+  vertical-align: top;
+  width: 60px;
+}
+.universe__right__content__left__container__third__section__content__corners__buildings > div > div {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    max-width: calc(100% - 71px);
+    padding-left: 8px;
+    text-transform: capitalize;
+}
+.universe__right__content__left__container__third__section__content__corners__buildings > div > div > p{
+    margin: 0;
+}
+.green{
+  color: var(--color-green);
 }
