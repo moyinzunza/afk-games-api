@@ -40,7 +40,7 @@ class ArmyController extends Controller
 
             foreach ($army_line as $arm_line) {
 
-                $init_unix_date = new DateTime($arm_line->created_at);
+                $init_unix_date = new DateTime($arm_line->start_at);
                 $init_unix_date = $init_unix_date->format('U');
                 $end_unix_date = new DateTime($arm_line->finish_at);
                 $end_unix_date = $end_unix_date->format('U');
@@ -252,12 +252,13 @@ class ArmyController extends Controller
         $module->save();
 
         $init_time = new DateTime();
+        $finish_time = new DateTime();
         $last_army_line = ArmyLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'army')->orderBy('id', 'DESC')->first();
         if(!empty($last_army_line)){
             $init_time = new DateTime($last_army_line->finish_at);
+            $finish_time = new DateTime($last_army_line->finish_at);;
         }
 
-        $finish_time = new DateTime();
         $finish_time->add(new DateInterval('PT' . (int)($army_config->time*$request->qty) . 'M'));
 
         ArmyLine::create([

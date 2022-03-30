@@ -108,15 +108,13 @@ class CronController extends Controller
             $end_date = new DateTime($army->finish_at);
 
             $army_qty = $army->qty;
-            $interval = $now->diff($end_date);
-            $diffInMinutes = $interval->days * 24 * 60;
-            $diffInMinutes += $interval->h * 60;
-            $diffInMinutes += $interval->i;
             $time_per_unit = $army->time_per_unit;
             $total_time = $time_per_unit * $army_qty;
-            $army_diff = $total_time - $diffInMinutes;
 
-            $qty = (int)(floor($army_diff / $time_per_unit));
+            $diffInSeconds = $end_date->getTimestamp() - $now->getTimestamp();
+            $army_diff = ($total_time*60) - $diffInSeconds;
+
+            $qty = (int)(floor($army_diff / ($time_per_unit*60)));
             if ($end_date <= $now) {
                 $qty = $army->qty;
             }
