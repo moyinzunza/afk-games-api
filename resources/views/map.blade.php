@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="universe__right__content__left__container resources">
+<div class="universe__right__content__left__container">
   <div class="universe__right__content__left__container__first">
     <img src="/images/cuadro.png" alt="bg" />
     <div class="universe__right__content__left__container__first__content">
@@ -63,7 +63,7 @@
 <script>
   $(function() {
     $(`.universe__left__menu > ul > li > a`).removeClass('active');
-    $(`.universe__left__menu > ul > li > a[href='/resources']`).addClass('active');
+    $(`.universe__left__menu > ul > li > a[href='/galaxy']`).addClass('active');
   })
 </script>
 @endsection

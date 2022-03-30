@@ -10,14 +10,6 @@
       </div>
     </div>
   </div>
-  <div class="universe__right__content__left__container__second">
-    <div class="universe__right__content__left__container__second__img" style="background-image: url(/images/bg.jpg);">
-    </div>
-    <div class="universe__right__content__left__container__second__img" style="background-image: url(/images/bg.jpg);">
-    </div>
-    <div class="universe__right__content__left__container__second__img" style="background-image: url(/images/bg.jpg);">
-    </div>
-  </div>
   <div class="universe__right__content__left__container__third">
     <div class="universe__right__content__left__container__third__section">
       <div class="universe__right__content__left__container__third__section__title">

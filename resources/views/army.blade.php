@@ -23,7 +23,7 @@
   <div class="universe__right__content__left__container__third">
     <div class="universe__right__content__left__container__third__section resources">
       <div class="universe__right__content__left__container__third__section__title">
-        Buildings <img src="/images/icon_4.svg" alt="status" />
+        Hangar <img src="/images/icon_4.svg" alt="status" />
       </div>
       <img src="/images/icon_b.svg" alt="bar" />
       <div class="universe__right__content__left__container__third__section__content">
@@ -63,7 +63,7 @@
 <script>
   $(function() {
     $(`.universe__left__menu > ul > li > a`).removeClass('active');
-    $(`.universe__left__menu > ul > li > a[href='/resources']`).addClass('active');
+    $(`.universe__left__menu > ul > li > a[href='/army']`).addClass('active');
   })
 </script>
 @endsection

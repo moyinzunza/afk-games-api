@@ -29,7 +29,7 @@ class TechnologiesController extends Controller
         $technologies_arr = array();
         if (!empty($module)) {
 
-            $technologies_upgrades_line = UpgradesLine::where('user_id', Auth::id())->where('type', 'technologies')->where('module_id', $module_id)->get();
+            $technologies_upgrades_line = UpgradesLine::where('user_id', Auth::id())->where('type', 'technologies')->get();
 
             $upgrade_line = array();
 
@@ -49,8 +49,9 @@ class TechnologiesController extends Controller
                 }
 
                 $single_upgrade = array(
-                    'technology_id' => $upgrades_line->upgrade_id,
-                    'technology_upgrade' => $technologies_config[$upgrades_line->upgrade_id - 1]->name,
+                    'image' => $technologies_config[$upgrades_line->upgrade_id - 1]->image_url,
+                    'id' => $upgrades_line->upgrade_id,
+                    'name' => $technologies_config[$upgrades_line->upgrade_id - 1]->name,
                     'next_level' => $next_level,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -106,7 +107,7 @@ class TechnologiesController extends Controller
                     'name' => $technolgy->name,
                     'image' => $technolgy->image_url,
                     'level' => $user_technology->level,
-                    'next_level_price_time' => CalculatePricesTimeController::get_technology_single_price_time($technolgy->id, $user_technology->level + 1),
+                    'price_time' => CalculatePricesTimeController::get_technology_single_price_time($technolgy->id, $user_technology->level + 1),
                     'require' => $conditions_array
                 );
 
@@ -114,6 +115,7 @@ class TechnologiesController extends Controller
             }
 
             $module_info = array(
+                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -121,8 +123,8 @@ class TechnologiesController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'levels' => $technologies_arr,
-                'upgrades_line' => $upgrade_line
+                'items' => $technologies_arr,
+                'items_line' => $upgrade_line
             );
 
             $data['status'] = array("statusCode" => 200, "message" => 'technologies in module');
@@ -138,7 +140,7 @@ class TechnologiesController extends Controller
     {
         $technologies_config = Technologies::get();
         $validator = Validator::make($request->all(), [
-            'technology_id' => 'required|integer|between:1,' . count($technologies_config)
+            'id' => 'required|integer|between:1,' . count($technologies_config)
         ]);
 
         if ($validator->fails()) {
@@ -161,7 +163,7 @@ class TechnologiesController extends Controller
         }
 
         $config_resources = Resources::get();
-        $user_technology = UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $request->technology_id)->first();
+        $user_technology = UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $request->id)->first();
         if (empty($user_technology)) {
             $data['status'] = array(
                 'statusCode' => 400,
@@ -171,7 +173,7 @@ class TechnologiesController extends Controller
         }
 
         $next_lvl = $user_technology->level + 1;
-        $next_lvl_price = CalculatePricesTimeController::get_technology_single_price_time($request->technology_id, $next_lvl);
+        $next_lvl_price = CalculatePricesTimeController::get_technology_single_price_time($request->id, $next_lvl);
         $price_resources_1 = $next_lvl_price[$config_resources[0]->name];
         $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
         $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
@@ -179,7 +181,7 @@ class TechnologiesController extends Controller
 
         //Conditions
         $conditions_array = array();
-        $conditions_arr = TechnologiesConditions::where('technology_id', $request->technology_id)->get();
+        $conditions_arr = TechnologiesConditions::where('technology_id', $request->id)->get();
         foreach ($conditions_arr as $condition) {
 
             $name = "";
@@ -222,7 +224,7 @@ class TechnologiesController extends Controller
                         $config_resources[0]->name => $module->resources_1,
                         $config_resources[1]->name => $module->resources_2,
                         $config_resources[2]->name => $module->resources_3,
-                        'technology_upgrade' => $technologies_config[$request->technology_id - 1]->name,
+                        'technology_upgrade' => $technologies_config[$request->id - 1]->name,
                         'current_level' => $user_technology->level
                     ),
                     'next_lvl_price_time' => $next_lvl_price,
@@ -232,7 +234,7 @@ class TechnologiesController extends Controller
             return response()->json($data, 400);
         }
 
-        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->technology_id)->where('type', 'technologies')->first();
+        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('upgrade_id', $request->id)->where('type', 'technologies')->first();
 
         if (!empty($upgrade_line)) {
             $data['status'] = array(
@@ -255,7 +257,7 @@ class TechnologiesController extends Controller
         UpgradesLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'upgrade_id' => $request->technology_id,
+            'upgrade_id' => $request->id,
             'type' => 'technologies',
             'finish_at' => $finish_time
         ]);
@@ -269,7 +271,7 @@ class TechnologiesController extends Controller
                     $config_resources[0]->name => $module->resources_1,
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3,
-                    'technology_upgrade' => $technologies_config[$request->technology_id - 1]->name,
+                    'technology_upgrade' => $technologies_config[$request->id - 1]->name,
                     'next_level' => $next_lvl
                 ),
                 'total_time_minutes' => $next_lvl_price['time_minutes'],

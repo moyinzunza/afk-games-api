@@ -48,8 +48,9 @@ class ArmyController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_army = array(
-                    'army_id' => $arm_line->army_id,
-                    'technology_upgrade' => $army_config[$arm_line->army_id - 1]->name,
+                    'image' => $army_config[$arm_line->army_id - 1]->image_url,
+                    'id' => $arm_line->army_id,
+                    'name' => $army_config[$arm_line->army_id - 1]->name,
                     'qty' => $arm_line->qty,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -120,6 +121,7 @@ class ArmyController extends Controller
             }
 
             $module_info = array(
+                'image' => 'https://cdn.wallpapersafari.com/94/62/OnCrYP.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -127,8 +129,8 @@ class ArmyController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'army' => $army_arr,
-                'production_line' => $production_line
+                'items' => $army_arr,
+                'items_line' => $production_line
             );
 
             $data['status'] = array("statusCode" => 200, "message" => 'army in module');
@@ -144,7 +146,7 @@ class ArmyController extends Controller
     {
         $army_config = Army::get();
         $validator = Validator::make($request->all(), [
-            'army_id' => 'required|integer|between:1,' . count($army_config),
+            'id' => 'required|integer|between:1,' . count($army_config),
             'qty' => 'required|integer'
         ]);
 
@@ -168,7 +170,7 @@ class ArmyController extends Controller
         }
 
         $config_resources = Resources::get();
-        $user_army = UsersArmy::where('user_id', Auth::id())->where('army_id', $request->army_id)->first();
+        $user_army = UsersArmy::where('user_id', Auth::id())->where('army_id', $request->id)->first();
         if (empty($user_army)) {
             $data['status'] = array(
                 'statusCode' => 400,
@@ -177,7 +179,7 @@ class ArmyController extends Controller
             return response()->json($data, 400);
         }
 
-        $army_config = Army::where('id', $request->army_id)->first();
+        $army_config = Army::where('id', $request->id)->first();
 
         $price_resources_1 = $army_config->resources1_price*$request->qty;
         $price_resources_2 = $army_config->resources2_price*$request->qty;
@@ -186,7 +188,7 @@ class ArmyController extends Controller
 
         //Conditions
         $conditions_array = array();
-        $conditions_arr = ArmyConditions::where('army_id', $request->army_id)->get();
+        $conditions_arr = ArmyConditions::where('army_id', $request->id)->get();
         foreach ($conditions_arr as $condition) {
 
             $name = "";
@@ -261,7 +263,7 @@ class ArmyController extends Controller
         ArmyLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'army_id' => $request->army_id,
+            'army_id' => $request->id,
             'qty' => $request->qty,
             'time_per_unit' => $army_config->time,
             'type' => 'army',

@@ -47,8 +47,8 @@ class HomeController extends Controller
                     'name' => $module->name,
                     'position' => array(
                         'galaxy' => $module->position_z,
-                        'solar_system' => $module->position_x,
-                        'planet' => $module->position_y
+                        'solar_system' => $module->position_y,
+                        'planet' => $module->position_x
                     ),
                     'resources' => array(
                         $config_resources[0]->name => array(

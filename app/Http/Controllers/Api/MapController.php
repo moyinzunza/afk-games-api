@@ -30,8 +30,8 @@ class MapController extends Controller
                 'name' => $module->name,
                 'position' => array(
                     'galaxy' => $module->position_z,
-                    'solar_system' => $module->position_x,
-                    'planet' => $module->position_y
+                    'solar_system' => $module->position_y,
+                    'planet' => $module->position_x
                 ),
                 'user_data' => array(
                     'id' => $user_data->id,

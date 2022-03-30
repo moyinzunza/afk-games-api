@@ -44,8 +44,9 @@ class DefenseController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_army = array(
-                    'defense_id' => $arm_line->army_id,
-                    'technology_upgrade' => $defense_config[$arm_line->army_id - 1]->name,
+                    'image' => $defense_config[$arm_line->army_id - 1]->image_url,
+                    'id' => $arm_line->army_id,
+                    'name' => $defense_config[$arm_line->army_id - 1]->name,
                     'qty' => $arm_line->qty,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -116,6 +117,7 @@ class DefenseController extends Controller
             }
 
             $module_info = array(
+                'image' => 'https://vid.alarabiya.net/images/2022/03/09/144ccf47-49f6-403c-9475-6fbd5a3cb0e2/144ccf47-49f6-403c-9475-6fbd5a3cb0e2_16x9_1200x676.jpg?width=1138',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -123,8 +125,8 @@ class DefenseController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'defense' => $defense_arr,
-                'production_line' => $production_line
+                'items' => $defense_arr,
+                'items_line' => $production_line
             );
 
             $data['status'] = array("statusCode" => 200, "message" => 'defense in module');
@@ -140,7 +142,7 @@ class DefenseController extends Controller
     {
         $defense_config = Defense::get();
         $validator = Validator::make($request->all(), [
-            'defense_id' => 'required|integer|between:1,' . count($defense_config),
+            'id' => 'required|integer|between:1,' . count($defense_config),
             'qty' => 'required|integer'
         ]);
 
@@ -164,7 +166,7 @@ class DefenseController extends Controller
         }
 
         $config_resources = Resources::get();
-        $user_defense = UsersDefense::where('user_id', Auth::id())->where('defense_id', $request->defense_id)->first();
+        $user_defense = UsersDefense::where('user_id', Auth::id())->where('defense_id', $request->id)->first();
         if (empty($user_defense)) {
             $data['status'] = array(
                 'statusCode' => 400,
@@ -173,7 +175,7 @@ class DefenseController extends Controller
             return response()->json($data, 400);
         }
 
-        $defense_config = Defense::where('id', $request->defense_id)->first();
+        $defense_config = Defense::where('id', $request->id)->first();
 
         $price_resources_1 = $defense_config->resources1_price*$request->qty;
         $price_resources_2 = $defense_config->resources2_price*$request->qty;
@@ -182,7 +184,7 @@ class DefenseController extends Controller
 
         //Conditions
         $conditions_array = array();
-        $conditions_arr = DefenseConditions::where('defense_id', $request->defense_id)->get();
+        $conditions_arr = DefenseConditions::where('defense_id', $request->id)->get();
         foreach ($conditions_arr as $condition) {
 
             $name = "";
@@ -258,7 +260,7 @@ class DefenseController extends Controller
         ArmyLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'army_id' => $request->defense_id,
+            'army_id' => $request->id,
             'qty' => $request->qty,
             'time_per_unit' => $defense_config->time,
             'type' => 'defense',

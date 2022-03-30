@@ -61,6 +61,31 @@ function setCookie(cname, cvalue, exdays) {
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+const calculeteResources = function (thisElement) {
+  let currQty = thisElement.val();
+  let currMineral = thisElement.attr('data-mineral');
+  let currCrystal = thisElement.attr('data-crystal');
+  let currFuel = thisElement.attr('data-fuel');
+  if (currQty > 0) {
+    currMineral = thisElement.attr('data-mineral') * currQty;
+    currCrystal = thisElement.attr('data-crystal') * currQty;
+    currFuel = thisElement.attr('data-fuel') * currQty;
+  }
+  $(`.btn.btn-create`).prop('disabled', false);
+  let currMineralg = $(`.universe__right__content__right__classification__item__content__number[data-mineral]`).attr('data-mineral');
+  let currCrystalg = $(`.universe__right__content__right__classification__item__content__number[data-crystal]`).attr('data-crystal');
+  let currFuelg = $(`.universe__right__content__right__classification__item__content__number[data-fuel]`).attr('data-fuel');
+  if (currMineralg < currMineral ||
+    currCrystalg < currCrystal ||
+    currFuelg < currFuel) {
+    $(`.btn.btn-create`).prop('disabled', true);
+  }
+}
+
 const register = async function (thisElement) {
   let lastTextBtn = $(thisElement) != '' ? $(thisElement).text() : ''
   if ($('#register-password').val() != $('#register-password-1').val() || $('#register-password').val() === '' || removeSpaces.test($('#register-password').val())) {
@@ -155,7 +180,7 @@ const getHome = async function () {
                   data-generate-qty-minute="${currDataAwait.result.module.resources[k].generate_qty_minute}"
                   data-${k.toLocaleUpperCase()}="${currDataAwait.result.module.resources[k].qty}"
                   >
-                  ${currDataAwait.result.module.resources[k].qty}
+                  ${numberWithCommas(currDataAwait.result.module.resources[k].qty)}
                 </span>
                 <span>${k}</span>
             </div>
@@ -187,7 +212,7 @@ const getModules = async function () {
   });
 }
 
-const getResources = async function () {
+const getModuleInfo = async function (currUrl) {
   let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
   let currToken = getCookie("access_token");
   $('.universe__right__content__left__container__third__section.resources').removeClass('active');
@@ -195,45 +220,53 @@ const getResources = async function () {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/resources`, 'GET', '', headers, '')
+  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${currUrl}`, 'GET', '', headers, '')
   $('.universe__right__content__left__container__first__content__img').css('background-image', `url(${currDataAwait.result.image})`);
   $('.universe__right__content__left__container__second.resources').html('');
-  Object.keys(currDataAwait.result.levels).forEach(function (k) {
+  Object.keys(currDataAwait.result.items).forEach(function (k) {
     let template = `
       <div class="universe__right__content__left__container__second__img" 
-        data-level-id="${currDataAwait.result.levels[k].id}"
-        data-json='${JSON.stringify(currDataAwait.result.levels[k])}'
-        style="background-image: url(${currDataAwait.result.levels[k].image});">
+        data-level-id="${currDataAwait.result.items[k].id}"
+        data-json='${JSON.stringify(currDataAwait.result.items[k])}'
+        style="background-image: url(${currDataAwait.result.items[k].image});">
         <p>
-        <span>${currDataAwait.result.levels[k].level}</span>  ${currDataAwait.result.levels[k].name}
+        <span>${currDataAwait.result.items[k].level || currDataAwait.result.items[k].level === 0 ? currDataAwait.result.items[k].level : currDataAwait.result.items[k].qty}</span>  ${currDataAwait.result.items[k].name}
         </p>
       </div>
       `
     $('.universe__right__content__left__container__second.resources').append(template)
   });
   $('.universe__right__content__left__container__third__section__content__corners__buildings').html('');
-  Object.keys(currDataAwait.result.upgrades_line).forEach(function (k) {
-    $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.upgrades_line[k].building_id}"]`).attr('isUpgraded', '1');
-    let templateBuilding = `
-       <div data-leve-id="${currDataAwait.result.upgrades_line[k].building_id}" >
-        <img src="${currDataAwait.result.upgrades_line[k].image}" alt="Build" />
-        <div>
-          <p>
-            <b>${currDataAwait.result.upgrades_line[k].building_upgrade} (<span class="green">Level ${currDataAwait.result.upgrades_line[k].next_level}</span>)</b><br />
-            <span class="span-counter-upgraded" 
-              id="clock-${currDataAwait.result.upgrades_line[k].building_id}" 
-              data-id="${currDataAwait.result.upgrades_line[k].building_id}" 
-              data-date-init="${currDataAwait.result.upgrades_line[k].date_init}"
-              data-date-finish="${currDataAwait.result.upgrades_line[k].date_finish}"
-              ></span>
-          </p>
-        <div>
-       </div>
-    `;
-    $('.universe__right__content__left__container__third__section__content__corners__buildings').append(templateBuilding)
-  });
-  if (currDataAwait.result.upgrades_line.length > 0) {
-    $('.universe__right__content__left__container__third__section.resources').addClass('active');
+  if (currDataAwait.result.items_line) {
+    Object.keys(currDataAwait.result.items_line).forEach(function (k) {
+      let templateNextLevel = currDataAwait.result.items_line[k].next_level || currDataAwait.result.items_line[k].next_level === 0 ? `Level (<span class="green">${currDataAwait.result.items_line[k].next_level}</span>)` : `(<span class="green">${currDataAwait.result.items_line[k].qty}</span>)`
+      $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.items_line[k].id}"]`).attr('isUpgraded', '1');
+      if (currDataAwait.result.items_line[k].qty) {
+        $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.items_line[k].id}"]`).removeAttr('isUpgraded');
+      }
+      let templateBuilding = `
+         <div data-leve-id="${currDataAwait.result.items_line[k].id}" >
+          <img src="${currDataAwait.result.items_line[k].image}" alt="Build" />
+          <div>
+            <p>
+              <b>${currDataAwait.result.items_line[k].name} ${templateNextLevel}</b><br />
+              <span class="span-counter-upgraded" 
+                id="clock-${currDataAwait.result.items_line[k].id}" 
+                data-id="${currDataAwait.result.items_line[k].id}" 
+                data-date-init="${currDataAwait.result.items_line[k].date_init}"
+                data-date-finish="${currDataAwait.result.items_line[k].date_finish}"
+                ></span>
+            </p>
+          <div>
+         </div>
+      `;
+      $('.universe__right__content__left__container__third__section__content__corners__buildings').append(templateBuilding)
+    });
+  }
+  if (currDataAwait.result.items_line) {
+    if (currDataAwait.result.items_line.length > 0) {
+      $('.universe__right__content__left__container__third__section.resources').addClass('active');
+    }
   }
   $(".span-counter-upgraded").each(function (index) {
     let dataFinishUnixTimestamp = $(this).attr('data-date-finish');
@@ -274,64 +307,85 @@ const closeErrorsContent = function (thisElement) {
   $(thisElement).parent().html('');
 }
 
-const showDetailsResources = function (thisElement) {
+const showDetails = function (thisElement) {
   if ($(thisElement).attr('data-json')) {
     $('.universe__right__content__left__container__second__img').removeClass('active');
     $(thisElement).addClass('active')
     let currJson = JSON.parse($(thisElement).attr('data-json'));
     $('.universe__right__content__left__container__first__popup').html('');
     $('.universe__right__content__left__container__first__popup').addClass('active');
+    let templateNextLevel = currJson.level || currJson.level === 0 ? `Next level (<span class="green">${currJson.level + 1}</span>)` : ''
+    let templateBTN = currJson.level || currJson.level === 0 ?
+      `<button data-id="${currJson.id}" class="btn btn-upgrade"> UPGRADE </button>` :
+      `<div class="universe-input universe-input-quantity">
+        <label for="login-email">Quantity</label>
+        <input type="number" id="create-quantity"
+        data-mineral="${currJson.price_time.mineral}"
+        data-crystal="${currJson.price_time.crystal}"
+        data-fuel="${currJson.price_time.fuel}">
+      </div> 
+      <button data-id="${currJson.id}" class="btn btn-upgrade btn-create"> CREATE </button>`
     let template = `
     <img src="/images/cancel.png" alt="x"/>
     <div>
       <img src="${currJson.image}" alt="image"/>
       <div>
-        <p class="name"><b>${currJson.name} (<span class="green">${currJson.level}</span>)</b></p>
+        <p class="name"><b>${currJson.name} (<span class="green">${currJson.level || currJson.level === 0 ? currJson.level : currJson.qty}</span>)</b></p>
         <hr />
-        <p><b>Next level (<span class="green">${currJson.level + 1}</span>)</b></p>
+        <p><b> ${templateNextLevel} </b ></p >
         <span>
-          Time: <b>${currJson.next_level_price_time.time_minutes} minutes</b><br />
-          Mineral: <b>${currJson.next_level_price_time.mineral}</b> <br />
-          Cristal: <b>${currJson.next_level_price_time.crystal}</b> <br />
-          Fuel: <b>${currJson.next_level_price_time.fuel}</b>
+          Time: <b>${currJson.price_time.time_minutes} minutes</b><br />
+          Mineral: <b>${numberWithCommas(currJson.price_time.mineral)}</b> <br />
+          Cristal: <b>${numberWithCommas(currJson.price_time.crystal)}</b> <br />
+          Fuel: <b>${numberWithCommas(currJson.price_time.fuel)}</b>
         </span>
         <br /><br />
-        <button data-id="${currJson.id}" class="btn btn-upgrade">
-        UPGRADE
-        </button>
-      </div>
-    </div>
+        ${templateBTN}
+      </div >
+    </div >
   `
     $('.universe__right__content__left__container__first__popup').html(template);
     let currIsUpgraded = $(thisElement).attr('isupgraded')
-    if (currIsUpgraded === '1') $(`.btn-upgrade[data-id="${currJson.id}"] `).prop('disabled', true);
+    if (currIsUpgraded === '1') {
+      $(`.btn-upgrade[data-id="${currJson.id}"]`).prop('disabled', true);
+      $(`.btn-create[data-id="${currJson.id}"]`).prop('disabled', true);
+    }
     let currMineral = $(`.universe__right__content__right__classification__item__content__number[data-mineral]`).attr('data-mineral');
     let currCrystal = $(`.universe__right__content__right__classification__item__content__number[data-crystal]`).attr('data-crystal');
     let currFuel = $(`.universe__right__content__right__classification__item__content__number[data-fuel]`).attr('data-fuel');
-    if (currMineral < currJson.next_level_price_time.mineral ||
-      currCrystal < currJson.next_level_price_time.crystal ||
-      currFuel < currJson.next_level_price_time.fuel) {
-      $(`.btn-upgrade[data-id="${currJson.id}"] `).prop('disabled', true);
+    if (currMineral < currJson.price_time.mineral ||
+      currCrystal < currJson.price_time.crystal ||
+      currFuel < currJson.price_time.fuel) {
+      $(`.btn-upgrade[data-id="${currJson.id}"]`).prop('disabled', true);
+      $(`.btn-create[data-id="${currJson.id}"]`).prop('disabled', true);
+      $('.universe-input-quantity').remove();
     }
   }
 }
 
-const upgrade = async function (currLevelID, thisElement) {
+const upgrade = async function (currID, thisElement) {
   let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
   let currToken = getCookie("access_token");
+  let getCurrUrl = window.location.pathname.replace('/', '');
   let data = {
-    "building_id": currLevelID
+    "id": currID
+  }
+  if (thisElement.hasClass('btn-create')) {
+    data = {
+      "id": currID,
+      "qty": Number($('#create-quantity').val())
+    }
   }
   let headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${currToken}`
+    'Authorization': `Bearer ${currToken} `
   }
-  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/resources`, 'POST', data, headers, '');
+  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${getCurrUrl}`, 'POST', data, headers, '');
   thisElement.prop('disabled', true);
   location.reload();
 }
 
-const hideDetailsResources = function () {
+const hideDetails = function () {
   $('.universe__right__content__left__container__first__popup').removeClass('active');
   $('.universe__right__content__left__container__second__img').removeClass('active');
   $('.universe__right__content__left__container__first__popup').html('');
@@ -346,7 +400,8 @@ $(function () {
   getModules();
 
   if ($('.universe__right__content__left__container').hasClass('resources')) {
-    getResources();
+    let getCurrUrl = window.location.pathname.replace('/', '');
+    getModuleInfo(getCurrUrl);
   }
 
   $(document).on('click', '#btn-login', function () {
@@ -373,23 +428,32 @@ $(function () {
     $(`.universe__right__content__right__planets__item`).removeClass('active');
     $(this).addClass('active');
     getHome();
-    getResources();
-    hideDetailsResources();
+    if ($('.universe__right__content__left__container').hasClass('resources')) {
+      let getCurrUrl = window.location.pathname.replace('/', '');
+      getModuleInfo(getCurrUrl);
+    }
+    hideDetails();
   })
 
   $(document).on('click', '.universe__right__content__left__container__second__img', function () {
-    showDetailsResources(this);
+    showDetails(this);
   })
 
   $(document).on('click', '.universe__right__content__left__container__first__popup > img', function () {
-    hideDetailsResources();
+    hideDetails();
   })
 
   $(document).on('click', '.btn-upgrade', function () {
-    let currLeveID = $(this).attr('data-id');
-    console.log('click')
-    console.log(currLeveID)
-    upgrade(currLeveID, $(this));
+    let currID = $(this).attr('data-id');
+    upgrade(currID, $(this));
+  })
+
+  $(document).on('keyup', '#create-quantity', function () {
+    calculeteResources($(this))
+  })
+
+  $(document).on('change', '#create-quantity', function () {
+    calculeteResources($(this))
   })
 
 })

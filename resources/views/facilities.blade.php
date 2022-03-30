@@ -63,7 +63,7 @@
 <script>
   $(function() {
     $(`.universe__left__menu > ul > li > a`).removeClass('active');
-    $(`.universe__left__menu > ul > li > a[href='/resources']`).addClass('active');
+    $(`.universe__left__menu > ul > li > a[href='/facilities']`).addClass('active');
   })
 </script>
 @endsection

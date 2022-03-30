@@ -46,8 +46,9 @@ class FacilitiesController extends Controller
                 }
 
                 $single_upgrade = array(
-                    'building_id' => $upgrades_line->upgrade_id,
-                    'building_upgrade' => $facilities_config[$upgrades_line->upgrade_id -1]->name,
+                    'image' => $facilities_config[$upgrades_line->upgrade_id-1]->image_url,
+                    'id' => $upgrades_line->upgrade_id,
+                    'name' => $facilities_config[$upgrades_line->upgrade_id -1]->name,
                     'next_level' => $next_level,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -77,13 +78,14 @@ class FacilitiesController extends Controller
                     'name' => $facility->name,
                     'image' => $facility->image_url,
                     'level' => $user_facility->level,
-                    'next_level_price_time' => CalculatePricesTimeController::get_facility_single_price_time($facility->id, $user_facility->level+1)
+                    'price_time' => CalculatePricesTimeController::get_facility_single_price_time($facility->id, $user_facility->level+1)
                 );
 
                 array_push($facilities_arr, $facility_arr);
             }
 
             $module_info = array(
+                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -91,8 +93,8 @@ class FacilitiesController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'levels' => $facilities_arr,
-                'upgrades_line' => $upgrade_line
+                'items' => $facilities_arr,
+                'items_line' => $upgrade_line
             );
 
             $data['status'] = array("statusCode" => 200, "message" => 'facilities in module');
@@ -108,7 +110,7 @@ class FacilitiesController extends Controller
     {
         $facilities_config = Facilities::get();
         $validator = Validator::make($request->all(), [
-            'building_id' => 'required|integer|between:1,'.count($facilities_config)
+            'id' => 'required|integer|between:1,'.count($facilities_config)
         ]);
 
         if ($validator->fails()) {
@@ -131,7 +133,7 @@ class FacilitiesController extends Controller
         }
 
         $config_resources = Resources::get();
-        $user_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $request->building_id)->first();
+        $user_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $request->id)->first();
         if (empty($user_facility)) {
             $data['status'] = array(
                 'statusCode' => 400,
@@ -141,7 +143,7 @@ class FacilitiesController extends Controller
         }
 
         $next_lvl = $user_facility->level + 1;
-        $next_lvl_price = CalculatePricesTimeController::get_facility_single_price_time($request->building_id, $next_lvl);
+        $next_lvl_price = CalculatePricesTimeController::get_facility_single_price_time($request->id, $next_lvl);
         $price_resources_1 = $next_lvl_price[$config_resources[0]->name];
         $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
         $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
@@ -160,7 +162,7 @@ class FacilitiesController extends Controller
                         $config_resources[0]->name => $module->resources_1,
                         $config_resources[1]->name => $module->resources_2,
                         $config_resources[2]->name => $module->resources_3,
-                        'building_upgrade' => $facilities_config[$request->building_id - 1]->name,
+                        'building_upgrade' => $facilities_config[$request->id - 1]->name,
                         'current_level' => $user_facility->level
                     ),
                     'next_lvl_price_time' => $next_lvl_price
@@ -169,7 +171,7 @@ class FacilitiesController extends Controller
             return response()->json($data, 400);
         }
 
-        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->building_id)->where('type', 'facilities')->first();
+        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->id)->where('type', 'facilities')->first();
 
         if (!empty($upgrade_line)) {
             $data['status'] = array(
@@ -191,7 +193,7 @@ class FacilitiesController extends Controller
         UpgradesLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'upgrade_id' => $request->building_id,
+            'upgrade_id' => $request->id,
             'type' => 'facilities',
             'finish_at' => $finish_time
         ]);
@@ -205,7 +207,7 @@ class FacilitiesController extends Controller
                     $config_resources[0]->name => $module->resources_1,
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3,
-                    'building_upgrade' => $facilities_config[$request->building_id -1]->name,
+                    'building_upgrade' => $facilities_config[$request->id -1]->name,
                     'next_level' => $next_lvl
                 ),
                 'total_time_minutes' => $next_lvl_price['time_minutes'],

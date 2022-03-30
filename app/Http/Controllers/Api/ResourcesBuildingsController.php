@@ -61,8 +61,8 @@ class ResourcesBuildingsController extends Controller
 
                 $single_upgrade = array(
                     'image' => $config_resources[$upgrades_line->upgrade_id-1]->image_url,
-                    'building_id' => $upgrades_line->upgrade_id,
-                    'building_upgrade' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
+                    'id' => $upgrades_line->upgrade_id,
+                    'name' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
                     'next_level' => $module->{'resources_building_lvl_' . $upgrades_line->upgrade_id} + 1,
                     'total_time_minutes' => $total_time_minutes,
                     'date_init' => $init_unix_date,
@@ -82,14 +82,14 @@ class ResourcesBuildingsController extends Controller
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3
                 ),
-                'levels' => array(
+                'items' => array(
                     array(
                         'id' => 1,
                         //'name' => $config_resources[0]->name,
                         'name' => $config_resources[0]->name . ' mine',
                         'image' => $config_resources[0]->image_url,
                         'level' => $module->resources_building_lvl_1,
-                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(1, $module->resources_building_lvl_1 + 1),
+                        'price_time' => CalculatePricesTimeController::get_single_price_time(1, $module->resources_building_lvl_1 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier
                     ),
                     array(
@@ -98,7 +98,7 @@ class ResourcesBuildingsController extends Controller
                         'name' => $config_resources[1]->name . ' mine',
                         'image' => $config_resources[1]->image_url,
                         'level' => $module->resources_building_lvl_2,
-                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(2, $module->resources_building_lvl_2 + 1),
+                        'price_time' => CalculatePricesTimeController::get_single_price_time(2, $module->resources_building_lvl_2 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier
                     ),
                     array(
@@ -107,11 +107,11 @@ class ResourcesBuildingsController extends Controller
                         'name' => 'refinery',
                         'image' => $config_resources[2]->image_url,
                         'level' => $module->resources_building_lvl_3,
-                        'next_level_price_time' => CalculatePricesTimeController::get_single_price_time(3, $module->resources_building_lvl_3 + 1),
+                        'price_time' => CalculatePricesTimeController::get_single_price_time(3, $module->resources_building_lvl_3 + 1),
                         'generate_qty_minute' => $module->resources_building_lvl_3 * $config_resources[2]->generate_multiplier
                     )
                 ),
-                'upgrades_line' => $upgrade_line
+                'items_line' => $upgrade_line
 
             );
 
@@ -129,7 +129,7 @@ class ResourcesBuildingsController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'building_id' => 'required|integer|between:1,3'
+            'id' => 'required|integer|between:1,3'
         ]);
 
         if ($validator->fails()) {
@@ -153,8 +153,8 @@ class ResourcesBuildingsController extends Controller
 
         $config_resources = Resources::get();
 
-        $next_lvl = $module->{'resources_building_lvl_' . $request->building_id} + 1;
-        $next_lvl_price = CalculatePricesTimeController::get_single_price_time($request->building_id, $next_lvl);
+        $next_lvl = $module->{'resources_building_lvl_' . $request->id} + 1;
+        $next_lvl_price = CalculatePricesTimeController::get_single_price_time($request->id, $next_lvl);
         $price_resources_1 = $next_lvl_price[$config_resources[0]->name];
         $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
         $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
@@ -173,8 +173,8 @@ class ResourcesBuildingsController extends Controller
                         $config_resources[0]->name => $module->resources_1,
                         $config_resources[1]->name => $module->resources_2,
                         $config_resources[2]->name => $module->resources_3,
-                        'building_upgrade' => $config_resources[$request->building_id - 1]->name,
-                        'current_level' => $module->{'resources_building_lvl_' . $request->building_id}
+                        'building_upgrade' => $config_resources[$request->id - 1]->name,
+                        'current_level' => $module->{'resources_building_lvl_' . $request->id}
                     ),
                     'next_lvl_price_time' => $next_lvl_price
                 )
@@ -182,7 +182,7 @@ class ResourcesBuildingsController extends Controller
             return response()->json($data, 400);
         }
 
-        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->building_id)->where('type', 'resources_building')->first();
+        $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->id)->where('type', 'resources_building')->first();
 
         if (!empty($upgrade_line)) {
             $data['status'] = array(
@@ -204,7 +204,7 @@ class ResourcesBuildingsController extends Controller
         UpgradesLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,
-            'upgrade_id' => $request->building_id,
+            'upgrade_id' => $request->id,
             'type' => 'resources_building',
             'finish_at' => $finish_time
         ]);
@@ -218,7 +218,7 @@ class ResourcesBuildingsController extends Controller
                     $config_resources[0]->name => $module->resources_1,
                     $config_resources[1]->name => $module->resources_2,
                     $config_resources[2]->name => $module->resources_3,
-                    'building_upgrade' => $config_resources[$request->building_id - 1]->name,
+                    'building_upgrade' => $config_resources[$request->id - 1]->name,
                     'next_level' => $next_lvl
                 ),
                 'total_time_minutes' => $next_lvl_price['time_minutes'],

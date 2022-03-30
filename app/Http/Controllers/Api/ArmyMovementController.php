@@ -284,16 +284,16 @@ class ArmyMovementController extends Controller
                     'name' => $module_origin->name,
                     'position' => array(
                         'galaxy' => $module_origin->position_z,
-                        'solar_system' => $module_origin->position_x,
-                        'planet' => $module_origin->position_y
+                        'solar_system' => $module_origin->position_y,
+                        'planet' => $module_origin->position_x
                     )
                 ),
                 'module_destination' => array(
                     'name' => $module_destination_name,
                     'position' => array(
                         'galaxy' => $movement->position_z,
-                        'solar_system' => $movement->position_x,
-                        'planet' => $movement->position_y
+                        'solar_system' => $movement->position_y,
+                        'planet' => $movement->position_x
                     )
                 ),
                 'army_group_id' => $movement->army_group_id,
