@@ -32,7 +32,7 @@ class FacilitiesController extends Controller
 
             foreach ($building_upgrades_line as $upgrades_line) {
 
-                $init_unix_date = new DateTime($upgrades_line->created_at);
+                $init_unix_date = new DateTime($upgrades_line->start_at);
                 $init_unix_date = $init_unix_date->format('U');
                 $end_unix_date = new DateTime($upgrades_line->finish_at);
                 $end_unix_date = $end_unix_date->format('U');
@@ -46,6 +46,7 @@ class FacilitiesController extends Controller
                 }
 
                 $single_upgrade = array(
+                    'id_line' => $upgrades_line->id,
                     'image' => $facilities_config[$upgrades_line->upgrade_id-1]->image_url,
                     'id' => $upgrades_line->upgrade_id,
                     'name' => $facilities_config[$upgrades_line->upgrade_id -1]->name,
@@ -188,6 +189,12 @@ class FacilitiesController extends Controller
 
         $init_time = new DateTime();
         $finish_time = new DateTime();
+        $last_facility_line = UpgradesLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'facilities')->orderBy('id', 'DESC')->first();
+        if(!empty($last_facility_line)){
+            $init_time = new DateTime($last_facility_line->finish_at);
+            $finish_time = new DateTime($last_facility_line->finish_at);;
+        }
+
         $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
 
         UpgradesLine::create([
@@ -195,6 +202,7 @@ class FacilitiesController extends Controller
             'module_id' => $module->id,
             'upgrade_id' => $request->id,
             'type' => 'facilities',
+            'start_at' => $init_time,
             'finish_at' => $finish_time
         ]);
 

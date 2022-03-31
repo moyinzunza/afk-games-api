@@ -32,11 +32,9 @@ class ArmyController extends Controller
 
             //Army production line
 
-
             $army_line = ArmyLine::where('user_id', Auth::id())->where('module_id', $module_id)->where('type', 'army')->get();
 
             $production_line = array();
-
 
             foreach ($army_line as $arm_line) {
 
@@ -48,6 +46,7 @@ class ArmyController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_army = array(
+                    'id_line' => $arm_line->id,
                     'image' => $army_config[$arm_line->army_id - 1]->image_url,
                     'id' => $arm_line->army_id,
                     'name' => $army_config[$arm_line->army_id - 1]->name,
@@ -78,6 +77,7 @@ class ArmyController extends Controller
 
                 $conditions_array = array();
                 $conditions_arr = ArmyConditions::where('army_id', $army->id)->get();
+                $all_conditions_fullfilled = true;
                 foreach ($conditions_arr as $condition) {
 
                     $name = "";
@@ -94,13 +94,16 @@ class ArmyController extends Controller
                         }
                     }
 
-                    if (!$fulfilled) {
-                        array_push($conditions_array, [
-                            'type' => $condition->type,
-                            'level' => $condition->min_level,
-                            'name' => $name
-                        ]);
+                    if(!$fulfilled){
+                        $all_conditions_fullfilled = false;
                     }
+
+                    array_push($conditions_array, [
+                        'type' => $condition->type,
+                        'level' => $condition->min_level,
+                        'name' => $name,
+                        'fulfilled' => $fulfilled
+                    ]);
                 }
 
                 $arm_arr = array(
@@ -114,6 +117,7 @@ class ArmyController extends Controller
                         $config_resources[2]->name => (int)($army->resources3_price),
                         "time_minutes" => (int)($army->time)
                     ),
+                    'all_conditions_fullfilled' => $all_conditions_fullfilled,
                     'require' => $conditions_array
                 );
 
@@ -181,9 +185,9 @@ class ArmyController extends Controller
 
         $army_config = Army::where('id', $request->id)->first();
 
-        $price_resources_1 = $army_config->resources1_price*$request->qty;
-        $price_resources_2 = $army_config->resources2_price*$request->qty;
-        $price_resources_3 = $army_config->resources3_price*$request->qty;
+        $price_resources_1 = $army_config->resources1_price * $request->qty;
+        $price_resources_2 = $army_config->resources2_price * $request->qty;
+        $price_resources_3 = $army_config->resources3_price * $request->qty;
 
 
         //Conditions
@@ -213,6 +217,7 @@ class ArmyController extends Controller
                 ]);
             }
         }
+        //end conditions
 
 
 
@@ -234,10 +239,10 @@ class ArmyController extends Controller
                     ),
                     'army_name' => $army_config->name,
                     'price_time' => array(
-                        $config_resources[0]->name => (int)($army_config->resources1_price*$request->qty),
-                        $config_resources[1]->name => (int)($army_config->resources2_price*$request->qty),
-                        $config_resources[2]->name => (int)($army_config->resources3_price*$request->qty),
-                        "time_minutes" => (int)($army_config->time*$request->qty)
+                        $config_resources[0]->name => (int)($army_config->resources1_price * $request->qty),
+                        $config_resources[1]->name => (int)($army_config->resources2_price * $request->qty),
+                        $config_resources[2]->name => (int)($army_config->resources3_price * $request->qty),
+                        "time_minutes" => (int)($army_config->time * $request->qty)
                     ),
                     'qty' => $request->qty,
                     'require' => $conditions_array
@@ -246,20 +251,20 @@ class ArmyController extends Controller
             return response()->json($data, 400);
         }
 
-        $module->resources_1 -= $army_config->resources1_price*$request->qty;
-        $module->resources_2 -= $army_config->resources2_price*$request->qty;
-        $module->resources_3 -= $army_config->resources3_price*$request->qty;
+        $module->resources_1 -= $army_config->resources1_price * $request->qty;
+        $module->resources_2 -= $army_config->resources2_price * $request->qty;
+        $module->resources_3 -= $army_config->resources3_price * $request->qty;
         $module->save();
 
         $init_time = new DateTime();
         $finish_time = new DateTime();
         $last_army_line = ArmyLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'army')->orderBy('id', 'DESC')->first();
-        if(!empty($last_army_line)){
+        if (!empty($last_army_line)) {
             $init_time = new DateTime($last_army_line->finish_at);
             $finish_time = new DateTime($last_army_line->finish_at);;
         }
 
-        $finish_time->add(new DateInterval('PT' . (int)($army_config->time*$request->qty) . 'M'));
+        $finish_time->add(new DateInterval('PT' . (int)($army_config->time * $request->qty) . 'M'));
 
         ArmyLine::create([
             'user_id' => Auth::id(),
@@ -284,12 +289,11 @@ class ArmyController extends Controller
                 ),
                 'army_name' => $army_config->name,
                 'qty' => $request->qty,
-                'total_time_minutes' => (int)($army_config->time*$request->qty),
+                'total_time_minutes' => (int)($army_config->time * $request->qty),
                 'date_init' => $init_time->format('U'),
                 'date_finish' => $finish_time->format('U')
             )
         );
         return response()->json($data, 200);
     }
-
 }

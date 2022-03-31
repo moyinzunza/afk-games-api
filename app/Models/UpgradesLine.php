@@ -13,6 +13,7 @@ class UpgradesLine extends Model
         'module_id',
         'upgrade_id',
         'type',
+        'start_at',
         'finish_at'
     ];
 

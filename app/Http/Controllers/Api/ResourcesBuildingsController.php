@@ -52,7 +52,7 @@ class ResourcesBuildingsController extends Controller
 
             foreach ($building_upgrades_line as $upgrades_line) {
 
-                $init_unix_date = new DateTime($upgrades_line->created_at);
+                $init_unix_date = new DateTime($upgrades_line->start_at);
                 $init_unix_date = $init_unix_date->format('U');
                 $end_unix_date = new DateTime($upgrades_line->finish_at);
                 $end_unix_date = $end_unix_date->format('U');
@@ -60,6 +60,7 @@ class ResourcesBuildingsController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_upgrade = array(
+                    'id_line' => $upgrades_line->id,
                     'image' => $config_resources[$upgrades_line->upgrade_id-1]->image_url,
                     'id' => $upgrades_line->upgrade_id,
                     'name' => $config_resources[$upgrades_line->upgrade_id - 1]->name,
@@ -199,6 +200,12 @@ class ResourcesBuildingsController extends Controller
 
         $init_time = new DateTime();
         $finish_time = new DateTime();
+        $last_building_line = UpgradesLine::where('module_id', $module_id)->where('user_id', Auth::id())->where('type', 'resources_building')->orderBy('id', 'DESC')->first();
+        if(!empty($last_building_line)){
+            $init_time = new DateTime($last_building_line->finish_at);
+            $finish_time = new DateTime($last_building_line->finish_at);;
+        }
+
         $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
 
         UpgradesLine::create([
@@ -206,6 +213,7 @@ class ResourcesBuildingsController extends Controller
             'module_id' => $module->id,
             'upgrade_id' => $request->id,
             'type' => 'resources_building',
+            'start_at' => $init_time,
             'finish_at' => $finish_time
         ]);
 

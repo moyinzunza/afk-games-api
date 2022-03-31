@@ -44,6 +44,7 @@ class DefenseController extends Controller
                 $total_time_minutes = ($end_unix_date - $init_unix_date) / 60;
 
                 $single_army = array(
+                    'id_line' => $arm_line->id,
                     'image' => $defense_config[$arm_line->army_id - 1]->image_url,
                     'id' => $arm_line->army_id,
                     'name' => $defense_config[$arm_line->army_id - 1]->name,
@@ -74,6 +75,7 @@ class DefenseController extends Controller
 
                 $conditions_array = array();
                 $conditions_arr = DefenseConditions::where('defense_id', $defense->id)->get();
+                $all_conditions_fullfilled = true;
                 foreach ($conditions_arr as $condition) {
 
                     $name = "";
@@ -90,13 +92,16 @@ class DefenseController extends Controller
                         }
                     }
 
-                    if (!$fulfilled) {
-                        array_push($conditions_array, [
-                            'type' => $condition->type,
-                            'level' => $condition->min_level,
-                            'name' => $name
-                        ]);
+                    if(!$fulfilled){
+                        $all_conditions_fullfilled = false;
                     }
+
+                    array_push($conditions_array, [
+                        'type' => $condition->type,
+                        'level' => $condition->min_level,
+                        'name' => $name,
+                        'fulfilled' => $fulfilled
+                    ]);
                 }
 
                 $def_arr = array(
@@ -110,6 +115,7 @@ class DefenseController extends Controller
                         $config_resources[2]->name => (int)($defense->resources3_price),
                         "time_minutes" => (int)($defense->time)
                     ),
+                    'all_conditions_fullfilled' => $all_conditions_fullfilled,
                     'require' => $conditions_array
                 );
 

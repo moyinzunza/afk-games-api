@@ -35,7 +35,7 @@ class TechnologiesController extends Controller
 
             foreach ($technologies_upgrades_line as $upgrades_line) {
 
-                $init_unix_date = new DateTime($upgrades_line->created_at);
+                $init_unix_date = new DateTime($upgrades_line->start_at);
                 $init_unix_date = $init_unix_date->format('U');
                 $end_unix_date = new DateTime($upgrades_line->finish_at);
                 $end_unix_date = $end_unix_date->format('U');
@@ -49,6 +49,7 @@ class TechnologiesController extends Controller
                 }
 
                 $single_upgrade = array(
+                    'id_line' => $upgrades_line->id,
                     'image' => $technologies_config[$upgrades_line->upgrade_id - 1]->image_url,
                     'id' => $upgrades_line->upgrade_id,
                     'name' => $technologies_config[$upgrades_line->upgrade_id - 1]->name,
@@ -77,6 +78,7 @@ class TechnologiesController extends Controller
 
                 $conditions_array = array();
                 $conditions_arr = TechnologiesConditions::where('technology_id', $technolgy->id)->get();
+                $all_conditions_fullfilled = true;
                 foreach ($conditions_arr as $condition) {
 
                     $name = "";
@@ -93,13 +95,16 @@ class TechnologiesController extends Controller
                         }
                     }
 
-                    if (!$fulfilled) {
-                        array_push($conditions_array, [
-                            'type' => $condition->type,
-                            'level' => $condition->min_level,
-                            'name' => $name
-                        ]);
+                    if(!$fulfilled){
+                        $all_conditions_fullfilled = false;
                     }
+
+                    array_push($conditions_array, [
+                        'type' => $condition->type,
+                        'level' => $condition->min_level,
+                        'name' => $name,
+                        'fulfilled' => $fulfilled
+                    ]);
                 }
 
                 $technology_arr = array(
@@ -108,6 +113,7 @@ class TechnologiesController extends Controller
                     'image' => $technolgy->image_url,
                     'level' => $user_technology->level,
                     'price_time' => CalculatePricesTimeController::get_technology_single_price_time($technolgy->id, $user_technology->level + 1),
+                    'all_conditions_fullfilled' => $all_conditions_fullfilled,
                     'require' => $conditions_array
                 );
 
@@ -251,6 +257,11 @@ class TechnologiesController extends Controller
 
         $init_time = new DateTime();
         $finish_time = new DateTime();
+        $last_technology_line = UpgradesLine::where('user_id', Auth::id())->where('type', 'technologies')->orderBy('id', 'DESC')->first();
+        if(!empty($last_technology_line)){
+            $init_time = new DateTime($last_technology_line->finish_at);
+            $finish_time = new DateTime($last_technology_line->finish_at);;
+        }
         $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
 
         
@@ -259,6 +270,7 @@ class TechnologiesController extends Controller
             'module_id' => $module->id,
             'upgrade_id' => $request->id,
             'type' => 'technologies',
+            'start_at' => $init_time,
             'finish_at' => $finish_time
         ]);
 
