@@ -1,3 +1,5 @@
+'use strict';
+
 let removeSpaces = /^\s+$/;
 
 const getData = function (paramUrl = '', paramMtdType = '', paramData = '', paramHeaders = '', currBtn = '') {
@@ -177,12 +179,13 @@ const getHome = async function () {
             <div class="universe__right__content__right__classification__item__content">
                 <span class="universe__right__content__right__classification__item__content__number" 
                   data-building-level="${currDataAwait.result.module.resources[k].building_level}" 
-                  data-generate-qty-minute="${currDataAwait.result.module.resources[k].generate_qty_minute}"
-                  data-${k.toLocaleUpperCase()}="${currDataAwait.result.module.resources[k].qty}"
+                  data-generate-qty-minute="${Number(currDataAwait.result.module.resources[k].generate_qty_minute)}"
+                  data-${k.toLocaleUpperCase()}="${Number(currDataAwait.result.module.resources[k].qty)}"
+                  data-qty="${Number(currDataAwait.result.module.resources[k].qty)}"
                   >
-                  ${numberWithCommas(currDataAwait.result.module.resources[k].qty)}
+                  ${numberWithCommas(Number(currDataAwait.result.module.resources[k].qty))}
                 </span>
-                <span>${k}</span>
+                <span>${currDataAwait.result.module.resources[k].name}</span>
             </div>
           </div>
         `
@@ -223,6 +226,7 @@ const getModuleInfo = async function (currUrl) {
   let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${currUrl}`, 'GET', '', headers, '')
   $('.universe__right__content__left__container__first__content__img').css('background-image', `url(${currDataAwait.result.image})`);
   $('.universe__right__content__left__container__second.resources').html('');
+
   Object.keys(currDataAwait.result.items).forEach(function (k) {
     let template = `
       <div class="universe__right__content__left__container__second__img" 
@@ -241,7 +245,7 @@ const getModuleInfo = async function (currUrl) {
     Object.keys(currDataAwait.result.items_line).forEach(function (k) {
       let templateNextLevel = currDataAwait.result.items_line[k].next_level || currDataAwait.result.items_line[k].next_level === 0 ? `Level (<span class="green">${currDataAwait.result.items_line[k].next_level}</span>)` : `(<span class="green">${currDataAwait.result.items_line[k].qty}</span>)`
       $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.items_line[k].id}"]`).attr('isUpgraded', '1');
-      if (currDataAwait.result.items_line[k].qty) {
+      if (currDataAwait.result.items_line[k].qty || currDataAwait.result.items_line[k].qty === 0) {
         $(`.universe__right__content__left__container__second__img[data-level-id="${currDataAwait.result.items_line[k].id}"]`).removeAttr('isUpgraded');
       }
       let templateBuilding = `
@@ -251,8 +255,8 @@ const getModuleInfo = async function (currUrl) {
             <p>
               <b>${currDataAwait.result.items_line[k].name} ${templateNextLevel}</b><br />
               <span class="span-counter-upgraded" 
-                id="clock-${currDataAwait.result.items_line[k].id}" 
-                data-id="${currDataAwait.result.items_line[k].id}" 
+                id="clock-${currDataAwait.result.items_line[k].id_line}" 
+                data-id="${currDataAwait.result.items_line[k].id_line}" 
                 data-date-init="${currDataAwait.result.items_line[k].date_init}"
                 data-date-finish="${currDataAwait.result.items_line[k].date_finish}"
                 ></span>
@@ -274,15 +278,15 @@ const getModuleInfo = async function (currUrl) {
     let currDateFinish = new Date(dataFinishMilliseconds);
     let currID = $(this).attr('data-id');
     $(`#clock-${currID}`).countdown(currDateFinish, function (event) {
-      if (event.strftime('%D') == 00) {
+      if (event.strftime('%D') == '00') {
         $(this).html(event.strftime('%H:%M:%S'));
       } else {
         $(this).html(event.strftime('%D Days %H:%M:%S'));
       }
-      if (event.strftime('%D') == 00 &&
-        event.strftime('%H') == 00 &&
-        event.strftime('%M') == 00 &&
-        event.strftime('%S') == 00) {
+      if (event.strftime('%D') == '00' &&
+        event.strftime('%H') == '00' &&
+        event.strftime('%M') == '00' &&
+        event.strftime('%S') == '00') {
         setTimeout(function () {
           location.reload();
         }, 5000);
@@ -294,10 +298,10 @@ const getModuleInfo = async function (currUrl) {
 const updateResorces60seconds = function () {
   setInterval(function () {
     $(".universe__right__content__right__classification__item").each(function (index) {
-      let currentItemText = $(this).find('.universe__right__content__right__classification__item__content__number').text();
-      let currentItemDataBuildingLevel = $(this).find('.universe__right__content__right__classification__item__content__number').attr('data-building-level');
-      let currentItemDataGenerateQtyMinute = $(this).find('.universe__right__content__right__classification__item__content__number').attr('data-generate-qty-minute');
-      $(this).find('.universe__right__content__right__classification__item__content__number').text(Number(currentItemText) + Number(currentItemDataGenerateQtyMinute));
+      let currentItemNumber = Number($(this).find('.universe__right__content__right__classification__item__content__number').attr('data-qty'));
+      //let currentItemDataBuildingLevel = $(this).find('.universe__right__content__right__classification__item__content__number').attr('data-building-level');
+      let currentItemDataGenerateQtyMinute = Number($(this).find('.universe__right__content__right__classification__item__content__number').attr('data-generate-qty-minute'));
+      $(this).find('.universe__right__content__right__classification__item__content__number').text(numberWithCommas(currentItemNumber + currentItemDataGenerateQtyMinute));
     });
   }, 60000);
 }
@@ -356,6 +360,11 @@ const showDetails = function (thisElement) {
     if (currMineral < currJson.price_time.mineral ||
       currCrystal < currJson.price_time.crystal ||
       currFuel < currJson.price_time.fuel) {
+      $(`.btn-upgrade[data-id="${currJson.id}"]`).prop('disabled', true);
+      $(`.btn-create[data-id="${currJson.id}"]`).prop('disabled', true);
+      $('.universe-input-quantity').remove();
+    }
+    if (currJson.all_conditions_fullfilled === false) {
       $(`.btn-upgrade[data-id="${currJson.id}"]`).prop('disabled', true);
       $(`.btn-create[data-id="${currJson.id}"]`).prop('disabled', true);
       $('.universe-input-quantity').remove();

@@ -652,6 +652,12 @@ body{
 .universe__right__content__left__container__third__section__content__corners__buildings > div{
     margin: 5px 0;
 }
+.universe__right__content__left__container__third__section__content__corners__buildings > div  .span-counter-upgraded{
+    display: none;
+}
+.universe__right__content__left__container__third__section__content__corners__buildings > div:first-child  .span-counter-upgraded{
+    display: block;
+}
 .universe__right__content__left__container__third__section__content__corners__buildings > div > img {
   display: inline-block;
   vertical-align: top;
