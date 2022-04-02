@@ -64,9 +64,6 @@
             </div>
             <div class="universe__left__btns">
                 <a class="btn" href="/">
-                    Casino
-                </a>
-                <a class="btn" href="/">
                     Store
                 </a>
                 <a class="btn" href="/">

@@ -60,14 +60,14 @@ class HomeController extends Controller
                             'generate_qty_minute' => $module->resources_building_lvl_1 * $config_resources[0]->generate_multiplier
                         ),
                         array(
-                            'name' => $config_resources[0]->name,
+                            'name' => $config_resources[1]->name,
                             'image' => $config_resources[1]->image_url,
                             'qty' => $module->resources_2,
                             'building_level' => $module->resources_building_lvl_2,
                             'generate_qty_minute' => $module->resources_building_lvl_2 * $config_resources[1]->generate_multiplier
                         ),
                         array(
-                            'name' => $config_resources[0]->name,
+                            'name' => $config_resources[2]->name,
                             'image' => $config_resources[2]->image_url,
                             'qty' => $module->resources_3,
                             'building_level' => $module->resources_building_lvl_3,

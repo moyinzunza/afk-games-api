@@ -81,12 +81,16 @@ class DefenseController extends Controller
                     $name = "";
                     $fulfilled = false;
                     if ($condition->type == 'facility') {
-                        $name = Facilities::where('id', $condition->type_id)->first()->name;
+                        $facility = Facilities::where('id', $condition->type_id)->first();
+                        $name = $facility->name;
+                        $image = $facility->image_url;
                         if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
                     } else if ($condition->type == 'technology') {
-                        $name = Technologies::where('id', $condition->type_id)->first()->name;
+                        $technologies = Technologies::where('id', $condition->type_id)->first();
+                        $name = $technologies->name;
+                        $image = $technologies->image_url;
                         if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
@@ -97,6 +101,7 @@ class DefenseController extends Controller
                     }
 
                     array_push($conditions_array, [
+                        'image' => $image,
                         'type' => $condition->type,
                         'level' => $condition->min_level,
                         'name' => $name,
@@ -123,7 +128,7 @@ class DefenseController extends Controller
             }
 
             $module_info = array(
-                'image' => 'https://vid.alarabiya.net/images/2022/03/09/144ccf47-49f6-403c-9475-6fbd5a3cb0e2/144ccf47-49f6-403c-9475-6fbd5a3cb0e2_16x9_1200x676.jpg?width=1138',
+                'image' => 'https://steamuserimages-a.akamaihd.net/ugc/268343213626180765/825F2B399D8EACAC6248CC24B6E2321A48A78AF4/?imw=1024&imh=511&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(

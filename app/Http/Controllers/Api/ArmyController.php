@@ -83,22 +83,27 @@ class ArmyController extends Controller
                     $name = "";
                     $fulfilled = false;
                     if ($condition->type == 'facility') {
-                        $name = Facilities::where('id', $condition->type_id)->first()->name;
+                        $facility = Facilities::where('id', $condition->type_id)->first();
+                        $name = $facility->name;
+                        $image = $facility->image_url;
                         if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
                     } else if ($condition->type == 'technology') {
-                        $name = Technologies::where('id', $condition->type_id)->first()->name;
+                        $technologies = Technologies::where('id', $condition->type_id)->first();
+                        $name = $technologies->name;
+                        $image = $technologies->image_url;
                         if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
                     }
 
-                    if(!$fulfilled){
+                    if (!$fulfilled) {
                         $all_conditions_fullfilled = false;
                     }
 
                     array_push($conditions_array, [
+                        'image' => $image,
                         'type' => $condition->type,
                         'level' => $condition->min_level,
                         'name' => $name,
@@ -125,7 +130,7 @@ class ArmyController extends Controller
             }
 
             $module_info = array(
-                'image' => 'https://cdn.wallpapersafari.com/94/62/OnCrYP.jpg',
+                'image' => 'http://www.igorstshirts.com/blog/conceptships/2017/juan_pablo_roldan/juan_pablo_roldan_01.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(

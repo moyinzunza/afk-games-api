@@ -229,9 +229,10 @@ const getModuleInfo = async function (currUrl) {
 
   Object.keys(currDataAwait.result.items).forEach(function (k) {
     let template = `
-      <div class="universe__right__content__left__container__second__img" 
+      <div class="universe__right__content__left__container__second__img ${currDataAwait.result.items[k].all_conditions_fullfilled === false ? 'opacity-this-section' : ''}" 
         data-level-id="${currDataAwait.result.items[k].id}"
         data-json='${JSON.stringify(currDataAwait.result.items[k])}'
+        
         style="background-image: url(${currDataAwait.result.items[k].image});">
         <p>
         <span>${currDataAwait.result.items[k].level || currDataAwait.result.items[k].level === 0 ? currDataAwait.result.items[k].level : currDataAwait.result.items[k].qty}</span>  ${currDataAwait.result.items[k].name}
@@ -264,12 +265,26 @@ const getModuleInfo = async function (currUrl) {
           <div>
          </div>
       `;
-      $('.universe__right__content__left__container__third__section__content__corners__buildings').append(templateBuilding)
+      $('.universe__right__content__left__container__third__section__content__corners__buildings').append(templateBuilding);
+
     });
+
+
   }
   if (currDataAwait.result.items_line) {
     if (currDataAwait.result.items_line.length > 0) {
       $('.universe__right__content__left__container__third__section.resources').addClass('active');
+      let timeFinish = $('.universe__right__content__left__container__third__section__content__corners__buildings > div:last-child .span-counter-upgraded').attr('data-date-finish');
+      let timeFinishSEconds = Number(timeFinish) * 1000;
+      let timeFinishDate = new Date(timeFinishSEconds);
+      $(`.universe__right__content__left__container__third__section__title`).append('<span id="clock-time-header" class="universe__right__content__left__container__third__section__title__time"></span>');
+      $(`#clock-time-header`).countdown(timeFinishDate, function (event) {
+        if (event.strftime('%D') == '00') {
+          $(this).html(`Total time ${event.strftime('%H:%M:%S')}`);
+        } else {
+          $(this).html(`Total time ${event.strftime('%D Days %H:%M:%S')}`);
+        }
+      });
     }
   }
   $(".span-counter-upgraded").each(function (index) {
@@ -316,6 +331,7 @@ const showDetails = function (thisElement) {
     $('.universe__right__content__left__container__second__img').removeClass('active');
     $(thisElement).addClass('active')
     let currJson = JSON.parse($(thisElement).attr('data-json'));
+    console.log(currJson);
     $('.universe__right__content__left__container__first__popup').html('');
     $('.universe__right__content__left__container__first__popup').addClass('active');
     let templateNextLevel = currJson.level || currJson.level === 0 ? `Next level (<span class="green">${currJson.level + 1}</span>)` : ''
@@ -367,6 +383,29 @@ const showDetails = function (thisElement) {
     if (currJson.all_conditions_fullfilled === false) {
       $(`.btn-upgrade[data-id="${currJson.id}"]`).prop('disabled', true);
       $(`.btn-create[data-id="${currJson.id}"]`).prop('disabled', true);
+      let template = `
+        <div class="universe__right__content__left__container__first__popup__resources">
+          <p class="universe__right__content__left__container__first__popup__resources__title">
+            Require
+          </p> 
+          <div class="universe__right__content__left__container__first__popup__resources__list">
+          </div>
+        </div>`;
+      $(`.btn-upgrade[data-id="${currJson.id}"], .btn-create[data-id="${currJson.id}"]`).after(template)
+      Object.keys(currJson.require).forEach(function (k) {
+        if (!currJson.require[k].fulfilled) {
+          let resourceTemplate = `
+            <div class="universe__right__content__left__container__first__popup__resources__list__resource">
+              <div style="background-image: url(${currJson.require[k].image})"></div>
+              <p>
+                <span class="name"><span>${currJson.require[k].name}</span> (${currJson.require[k].level}) </span>
+                <!--<span class="type">Type: <span>${currJson.require[k].type}</span></span>-->
+              </p>
+            </div>
+          `;
+          $('.universe__right__content__left__container__first__popup__resources__list').append(resourceTemplate);
+        }
+      });
       $('.universe-input-quantity').remove();
     }
   }

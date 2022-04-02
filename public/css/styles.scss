@@ -506,6 +506,70 @@ body{
 .universe__right__content__left__container__first__popup.active{
     bottom: 0%;
 }
+.universe__right__content__left__container__first__popup__resources{
+    width: 100%;
+    padding: 0px;
+    margin: 15px 0;
+}
+.universe__right__content__left__container__first__popup__resources__title{
+    color: #ffaa00;
+    margin: 0;
+    margin-bottom: 5px;
+}
+.universe__right__content__left__container__first__popup__resources__list__resource{
+    display: inline-block;
+    vertical-align: top;
+    max-width: 30%;
+    margin: 5px 5px 0 0;
+    border: 2px solid #ffaa00;
+    text-align: center;
+    width: 60px;
+    position: relative
+}
+.universe__right__content__left__container__first__popup__resources__list__resource > div{
+    width: 60px;
+    height: 60px;
+    background-attachment: inherit;
+    background-size: cover;
+    background-position: center;
+
+}
+.universe__right__content__left__container__first__popup__resources__list__resource > p{
+    margin: 0px 0;
+    padding: 5px 2px;
+    position: absolute;
+    width: calc(100% - 4px);
+    background: rgba(0,0,0, .6);
+    bottom: 0px;
+}
+.universe__right__content__left__container__first__popup__resources__list__resource > p > span{
+ display: block;
+ font-size: 10px;
+ padding: 0 0px;
+ text-transform: uppercase !important;
+ font-weight: 700;
+ overflow: auto;
+ color: #ffaa00;
+}
+/* width */
+.universe__right__content__left__container__first__popup__resources__list__resource > p > span::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+/* Track */
+.universe__right__content__left__container__first__popup__resources__list__resource > p > span::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px var(--color-green); 
+    border-radius: 10px;
+}
+/* Handle */
+.universe__right__content__left__container__first__popup__resources__list__resource > p > span::-webkit-scrollbar-thumb {
+    background:#666; 
+    border-radius: 10px;
+}
+/* Handle on hover */
+.universe__right__content__left__container__first__popup__resources__list__resource > p > span::-webkit-scrollbar-thumb:hover {
+    background: #212121; 
+}
 /* width */
 .universe__right__content__left__container__first__popup::-webkit-scrollbar {
     width: 3px;
@@ -563,6 +627,11 @@ body{
     border: 5px solid var(--color-blue);
     margin-bottom: 5px;
     position: relative;
+}
+.opacity-this-section{
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+  opacity: .5;
 }
 .universe__right__content__left__container__second__img.active{
     border: 5px solid #6e6e6e;
@@ -633,6 +702,13 @@ body{
     position: absolute;
     right: 30px;
     top: 12px;
+}
+.universe__right__content__left__container__third__section__title__time{
+    position: absolute;
+    right: 30px;
+    top: 13px;
+    color: var(--color-green);
+    font-size: 12px;
 }
 .universe__right__content__left__container__third__section__content{
     position: relative;

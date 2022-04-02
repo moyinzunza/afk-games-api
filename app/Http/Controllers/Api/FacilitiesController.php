@@ -86,7 +86,7 @@ class FacilitiesController extends Controller
             }
 
             $module_info = array(
-                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
+                'image' => 'https://cdna.artstation.com/p/assets/images/images/003/935/276/large/tu-bui-planetary-core-mining-above-horizon-01.jpg?1478688429',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(

@@ -84,22 +84,27 @@ class TechnologiesController extends Controller
                     $name = "";
                     $fulfilled = false;
                     if ($condition->type == 'facility') {
-                        $name = Facilities::where('id', $condition->type_id)->first()->name;
-                        if(!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())){
+                        $facility = Facilities::where('id', $condition->type_id)->first();
+                        $name = $facility->name;
+                        $image = $facility->image_url;
+                        if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
                     } else if ($condition->type == 'technology') {
-                        $name = Technologies::where('id', $condition->type_id)->first()->name;
-                        if(!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())){
+                        $technologies = Technologies::where('id', $condition->type_id)->first();
+                        $name = $technologies->name;
+                        $image = $technologies->image_url;
+                        if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                             $fulfilled = true;
                         }
                     }
 
-                    if(!$fulfilled){
+                    if (!$fulfilled) {
                         $all_conditions_fullfilled = false;
                     }
 
                     array_push($conditions_array, [
+                        'image' => $image,
                         'type' => $condition->type,
                         'level' => $condition->min_level,
                         'name' => $name,
@@ -121,7 +126,7 @@ class TechnologiesController extends Controller
             }
 
             $module_info = array(
-                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
+                'image' => 'https://i.pinimg.com/originals/ac/76/62/ac766297cb5c4bb7f954b02381e1f315.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
@@ -194,12 +199,12 @@ class TechnologiesController extends Controller
             $fulfilled = false;
             if ($condition->type == 'facility') {
                 $name = Facilities::where('id', $condition->type_id)->first()->name;
-                if(!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())){
+                if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                     $fulfilled = true;
                 }
             } else if ($condition->type == 'technology') {
                 $name = Technologies::where('id', $condition->type_id)->first()->name;
-                if(!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())){
+                if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
                     $fulfilled = true;
                 }
             }
@@ -218,7 +223,7 @@ class TechnologiesController extends Controller
         if (
             $price_resources_1 > $module->resources_1
             || $price_resources_2 > $module->resources_2
-            || $price_resources_3 > $module->resources_3 
+            || $price_resources_3 > $module->resources_3
             || count($conditions_array) > 0
         ) {
             $data['status'] = array(
@@ -258,13 +263,13 @@ class TechnologiesController extends Controller
         $init_time = new DateTime();
         $finish_time = new DateTime();
         $last_technology_line = UpgradesLine::where('user_id', Auth::id())->where('type', 'technologies')->orderBy('id', 'DESC')->first();
-        if(!empty($last_technology_line)){
+        if (!empty($last_technology_line)) {
             $init_time = new DateTime($last_technology_line->finish_at);
             $finish_time = new DateTime($last_technology_line->finish_at);;
         }
         $finish_time->add(new DateInterval('PT' . $next_lvl_price['time_minutes'] . 'M'));
 
-        
+
         UpgradesLine::create([
             'user_id' => Auth::id(),
             'module_id' => $module->id,

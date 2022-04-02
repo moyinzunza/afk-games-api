@@ -23,7 +23,7 @@
   <div class="universe__right__content__left__container__third">
     <div class="universe__right__content__left__container__third__section resources">
       <div class="universe__right__content__left__container__third__section__title">
-        Hangar <img src="/images/icon_4.svg" alt="status" />
+        Hangar
       </div>
       <img src="/images/icon_b.svg" alt="bar" />
       <div class="universe__right__content__left__container__third__section__content">

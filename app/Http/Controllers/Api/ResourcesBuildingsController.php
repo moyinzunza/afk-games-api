@@ -75,7 +75,7 @@ class ResourcesBuildingsController extends Controller
 
             //edit images for modules
             $module_info = array(
-                'image' => 'https://media.wired.com/photos/593387807965e75f5f3c8847/master/w_2560%2Cc_limit/Multi-dome_base_being_constructed.jpg',
+                'image' => 'https://i.pinimg.com/originals/d6/5a/3f/d65a3f610e29898ec0f65fc566b63a3c.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
