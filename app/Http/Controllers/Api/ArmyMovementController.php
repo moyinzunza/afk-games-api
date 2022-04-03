@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Army;
 use App\Models\ArmyGroups;
 use App\Models\ArmyMovement;
-use App\Models\Resources;
+use App\Models\ResourcesBuildings;
 use App\Models\UsersArmy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -128,7 +128,7 @@ class ArmyMovementController extends Controller
             $request->resources_2_carring > $module->resources_2 ||
             $request->resources_3_carring > $module->resources_3
         ) {
-            $config_resources = json_decode(Resources::get());
+            $config_resources = json_decode(ResourcesBuildings::get());
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'Not enough resources in module.'
@@ -222,7 +222,7 @@ class ArmyMovementController extends Controller
         $module->save();
 
 
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
         $data['status'] = array(
             'statusCode' => 200,
             'message' => 'army send',
@@ -243,7 +243,7 @@ class ArmyMovementController extends Controller
 
     public function get_army_movement($module_id)
     {
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
         $army_movement = ArmyMovement::where('user_id', Auth::id())->orWhere('user_id_destination', Auth::id())->get();
 
         $army_movement_array = array();

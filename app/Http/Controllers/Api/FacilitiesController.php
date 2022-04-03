@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Models\Facilities;
 use App\Models\UsersFacilities;
 use App\Models\Modules;
-use App\Models\Resources;
 use App\Models\UpgradesLine;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\CalculatePricesTimeController;
+use App\Models\ResourcesBuildings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use DateInterval;
@@ -20,7 +20,7 @@ class FacilitiesController extends Controller
     {
 
         $facilities_config = Facilities::get();
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         $facilities_arr = array();
@@ -133,7 +133,7 @@ class FacilitiesController extends Controller
             return response()->json($data, 400);
         }
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $user_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $request->id)->first();
         if (empty($user_facility)) {
             $data['status'] = array(

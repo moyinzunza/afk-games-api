@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Models\Technologies;
 use App\Models\UsersTechnologies;
 use App\Models\Modules;
-use App\Models\Resources;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Army;
 use App\Models\ArmyConditions;
 use App\Models\ArmyLine;
 use App\Models\Facilities;
+use App\Models\ResourcesBuildings;
 use App\Models\UsersArmy;
 use App\Models\UsersFacilities;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class ArmyController extends Controller
     {
 
         $army_config = Army::get();
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         $army_arr = array();
@@ -178,7 +178,7 @@ class ArmyController extends Controller
             return response()->json($data, 400);
         }
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $user_army = UsersArmy::where('user_id', Auth::id())->where('army_id', $request->id)->first();
         if (empty($user_army)) {
             $data['status'] = array(

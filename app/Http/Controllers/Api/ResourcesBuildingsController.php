@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\UpgradesLine;
 use App\Models\Modules;
-use App\Models\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\CalculatePricesTimeController;
-
+use App\Models\ResourcesBuildings;
 use DateTime;
 use DateInterval;
 
@@ -19,7 +18,7 @@ class ResourcesBuildingsController extends Controller
 
     public function get_resources_buildings_prices()
     {
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $prices_arr = array();
 
         for ($i = 1; $i <= 30; $i++) {
@@ -42,7 +41,7 @@ class ResourcesBuildingsController extends Controller
 
     public function get_module_resources($module_id)
     {
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         if (!empty($module)) {
 
@@ -152,7 +151,7 @@ class ResourcesBuildingsController extends Controller
             return response()->json($data, 400);
         }
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
 
         $next_lvl = $module->{'resources_building_lvl_' . $request->id} + 1;
         $next_lvl_price = CalculatePricesTimeController::get_single_price_time($request->id, $next_lvl);

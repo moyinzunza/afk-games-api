@@ -6,15 +6,14 @@ use App\Models\Modules;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Resources;
-
+use App\Models\ResourcesBuildings;
 
 class HomeController extends Controller
 {
     public function get_home_data(Request $request)
     {
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
 
         if (empty($request->module)) {
             $module = Modules::where('user_id', Auth::id())->first();

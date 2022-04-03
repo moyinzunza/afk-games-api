@@ -6,11 +6,11 @@ use App\Models\Technologies;
 use App\Models\TechnologiesConditions;
 use App\Models\UsersTechnologies;
 use App\Models\Modules;
-use App\Models\Resources;
 use App\Models\UpgradesLine;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\CalculatePricesTimeController;
 use App\Models\Facilities;
+use App\Models\ResourcesBuildings;
 use App\Models\UsersFacilities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +23,7 @@ class TechnologiesController extends Controller
     {
 
         $technologies_config = Technologies::get();
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
         $technologies_arr = array();
@@ -173,7 +173,7 @@ class TechnologiesController extends Controller
             return response()->json($data, 400);
         }
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $user_technology = UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $request->id)->first();
         if (empty($user_technology)) {
             $data['status'] = array(

@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\ArmyGroups;
 use App\Models\UsersTechnologies;
 use App\Models\Modules;
-use App\Models\Resources;
 use App\Models\User;
 use App\Models\ArmyLine;
 use App\Models\ArmyMovement;
 use App\Models\PushNotificationTokens;
+use App\Models\ResourcesBuildings;
 use App\Models\UpgradesLine;
 use App\Models\UsersArmy;
 use App\Models\UsersDefense;
@@ -24,7 +24,7 @@ class CronController extends Controller
         //runs every minute
 
         $users = User::where('status', 'active')->get();
-        $config_resources = json_decode(Resources::get());
+        $config_resources = json_decode(ResourcesBuildings::get());
 
         foreach ($users as $user) {
 

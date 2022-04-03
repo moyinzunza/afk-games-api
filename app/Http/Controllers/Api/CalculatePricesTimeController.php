@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Facilities;
-use App\Models\Resources;
+use App\Models\ResourcesBuildings;
 use App\Models\Technologies;
 
 class CalculatePricesTimeController extends Controller
@@ -22,7 +22,7 @@ class CalculatePricesTimeController extends Controller
     public static function get_single_price_time($building_id, $building_level)
     {
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $selected_resource = $config_resources[$building_id - 1];
 
         $multiplier = CalculatePricesTimeController::fibonacci($building_level);
@@ -39,7 +39,7 @@ class CalculatePricesTimeController extends Controller
     public static function get_facility_single_price_time($building_id, $building_level)
     {
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $selected_facility = Facilities::where('id', $building_id)->first();
 
         $multiplier = CalculatePricesTimeController::fibonacci($building_level);
@@ -56,7 +56,7 @@ class CalculatePricesTimeController extends Controller
     public static function get_technology_single_price_time($technology_id, $building_level)
     {
 
-        $config_resources = Resources::get();
+        $config_resources = ResourcesBuildings::get();
         $selected_technology = Technologies::where('id', $technology_id)->first();
 
         $multiplier = CalculatePricesTimeController::fibonacci($building_level);
