@@ -147,7 +147,7 @@ class ArmyController extends Controller
             return response()->json($data, 200);
         } else {
             $data['status'] = array("statusCode" => 400, "message" => 'no module found');
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
     }
 
@@ -165,7 +165,7 @@ class ArmyController extends Controller
                 'message' => 'The given data was invalid.'
             );
             $data['result'] = array('errors' => $validator->errors());
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
@@ -175,7 +175,7 @@ class ArmyController extends Controller
                 'statusCode' => 400,
                 'message' => 'Module not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $config_resources = ResourcesBuildings::get();
@@ -185,7 +185,7 @@ class ArmyController extends Controller
                 'statusCode' => 400,
                 'message' => 'army not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $army_config = Army::where('id', $request->id)->first();
@@ -253,7 +253,7 @@ class ArmyController extends Controller
                     'require' => $conditions_array
                 )
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module->resources_1 -= $army_config->resources1_price * $request->qty;

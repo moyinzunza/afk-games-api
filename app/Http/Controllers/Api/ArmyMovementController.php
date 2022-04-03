@@ -40,7 +40,7 @@ class ArmyMovementController extends Controller
                 'message' => 'The given data was invalid.'
             );
             $data['result'] = array('errors' => $validator->errors());
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module = Modules::where('user_id', Auth::id())->where('id', $module_id)->first();
@@ -49,7 +49,7 @@ class ArmyMovementController extends Controller
                 'statusCode' => 400,
                 'message' => 'Not module found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $user_id_destination = 0;
@@ -61,7 +61,7 @@ class ArmyMovementController extends Controller
                 'statusCode' => 400,
                 'message' => 'Not module destination found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
         if (!empty($module_destination)) {
             $user_id_destination = $module_destination->user_id;
@@ -83,28 +83,28 @@ class ArmyMovementController extends Controller
                             'statusCode' => 400,
                             'message' => 'Colonizer needed.'
                         );
-                        return response()->json($data, 400);
+                        return response()->json($data, 200);
                     }
                 } else {
                     $data['status'] = array(
                         'statusCode' => 400,
                         'message' => 'Unit dont exist.'
                     );
-                    return response()->json($data, 400);
+                    return response()->json($data, 200);
                 }
             } else {
                 $data['status'] = array(
                     'statusCode' => 400,
                     'message' => 'You only can send 1 colonizer.'
                 );
-                return response()->json($data, 400);
+                return response()->json($data, 200);
             }
         } else {
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'Module exist cant colonize.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         if ($request->type == 'deploy' && $module_destination->user_id != Auth::id()) {
@@ -112,7 +112,7 @@ class ArmyMovementController extends Controller
                 'statusCode' => 400,
                 'message' => 'You only can deploy to your own modules.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         if ($request->type == 'attack' && $module_destination->user_id == Auth::id()) {
@@ -120,7 +120,7 @@ class ArmyMovementController extends Controller
                 'statusCode' => 400,
                 'message' => 'You cant attack your own modules.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         if (
@@ -138,7 +138,7 @@ class ArmyMovementController extends Controller
                 $config_resources[1]->name => $module->resources_2,
                 $config_resources[2]->name => $module->resources_3
             ));
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $total_carrying_capacity = 0;
@@ -161,7 +161,7 @@ class ArmyMovementController extends Controller
                 'statusCode' => 400,
                 'message' => 'Not enough units.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         if ($total_carrying_capacity < ($request->resources_1_carring + $request->resources_2_carring + $request->resources_3_carring)) {
@@ -170,7 +170,7 @@ class ArmyMovementController extends Controller
                 'message' => 'Not enough space for transport resources.'
             );
             $data['result'] = array('carrying_capacity' => $total_carrying_capacity);
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $distance_between_modules = sqrt(pow($module->position_x - $request->position_x, 2) + pow($module->position_y - $request->position_y, 2) + pow($module->position_z - $request->position_z, 2));

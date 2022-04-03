@@ -143,7 +143,7 @@ class TechnologiesController extends Controller
             return response()->json($data, 200);
         } else {
             $data['status'] = array("statusCode" => 400, "message" => 'no module found');
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
     }
 
@@ -160,7 +160,7 @@ class TechnologiesController extends Controller
                 'message' => 'The given data was invalid.'
             );
             $data['result'] = array('errors' => $validator->errors());
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
@@ -170,7 +170,7 @@ class TechnologiesController extends Controller
                 'statusCode' => 400,
                 'message' => 'Module not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $config_resources = ResourcesBuildings::get();
@@ -180,7 +180,7 @@ class TechnologiesController extends Controller
                 'statusCode' => 400,
                 'message' => 'technology not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $next_lvl = $user_technology->level + 1;
@@ -242,7 +242,7 @@ class TechnologiesController extends Controller
                     'require' => $conditions_array
                 )
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('upgrade_id', $request->id)->where('type', 'technologies')->first();
@@ -252,7 +252,7 @@ class TechnologiesController extends Controller
                 'statusCode' => 400,
                 'message' => 'Upgrade already in progress.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module->resources_1 -= $next_lvl_price[$config_resources[0]->name];

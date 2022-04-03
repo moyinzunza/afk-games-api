@@ -145,7 +145,7 @@ class DefenseController extends Controller
             return response()->json($data, 200);
         } else {
             $data['status'] = array("statusCode" => 400, "message" => 'no module found');
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
     }
 
@@ -163,7 +163,7 @@ class DefenseController extends Controller
                 'message' => 'The given data was invalid.'
             );
             $data['result'] = array('errors' => $validator->errors());
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
@@ -173,7 +173,7 @@ class DefenseController extends Controller
                 'statusCode' => 400,
                 'message' => 'Module not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $config_resources = ResourcesBuildings::get();
@@ -183,7 +183,7 @@ class DefenseController extends Controller
                 'statusCode' => 400,
                 'message' => 'defense not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $defense_config = Defense::where('id', $request->id)->first();
@@ -250,7 +250,7 @@ class DefenseController extends Controller
                     'require' => $conditions_array
                 )
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module->resources_1 -= $defense_config->resources1_price*$request->qty;

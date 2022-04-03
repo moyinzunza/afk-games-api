@@ -72,7 +72,6 @@ class ResourcesBuildingsController extends Controller
                 array_push($upgrade_line, $single_upgrade);
             }
 
-            //edit images for modules
             $module_info = array(
                 'image' => 'https://i.pinimg.com/originals/d6/5a/3f/d65a3f610e29898ec0f65fc566b63a3c.jpg',
                 'id' => $module->id,
@@ -121,7 +120,7 @@ class ResourcesBuildingsController extends Controller
         } else {
 
             $data['status'] = array("statusCode" => 400, "message" => 'no module found');
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
     }
 
@@ -138,7 +137,7 @@ class ResourcesBuildingsController extends Controller
                 'message' => 'The given data was invalid.'
             );
             $data['result'] = array('errors' => $validator->errors());
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
@@ -148,7 +147,7 @@ class ResourcesBuildingsController extends Controller
                 'statusCode' => 400,
                 'message' => 'Module not found.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $config_resources = ResourcesBuildings::get();
@@ -179,7 +178,7 @@ class ResourcesBuildingsController extends Controller
                     'next_lvl_price_time' => $next_lvl_price
                 )
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $upgrade_line = UpgradesLine::where('user_id', Auth::id())->where('module_id', $module->id)->where('upgrade_id', $request->id)->where('type', 'resources_building')->first();
@@ -189,7 +188,7 @@ class ResourcesBuildingsController extends Controller
                 'statusCode' => 400,
                 'message' => 'Upgrade already in progress.'
             );
-            return response()->json($data, 400);
+            return response()->json($data, 200);
         }
 
         $module->resources_1 -= $next_lvl_price[$config_resources[0]->name];
