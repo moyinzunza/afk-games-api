@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Modules;
-use App\Models\User;
+use App\Models\Users;
 use Illuminate\Http\Request;
 
 class MapController extends Controller
@@ -24,7 +24,7 @@ class MapController extends Controller
 
         foreach ($modules as $module) {
 
-            $user_data = User::where('id', $module->user_id)->first();
+            $user_data = Users::where('id', $module->user_id)->first();
             $module_info = array(
                 'id' => $module->id,
                 'name' => $module->name,

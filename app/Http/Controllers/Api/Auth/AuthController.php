@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Models\User;
+use App\Models\Users;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Controller;
@@ -46,7 +46,7 @@ class AuthController extends Controller
         $uname = str_replace(' ', '', $uname);
         $uname = str_replace('-', '', $uname);
 
-        $check_uname = User::where('username', $uname)->first();
+        $check_uname = Users::where('username', $uname)->first();
         if (!empty($check_uname)) {
             return response()->json(array(
                 'status' => array(
@@ -60,7 +60,7 @@ class AuthController extends Controller
         $referred_by_userid = null;
 
         if (!empty($request->referred_by_username)) {
-            $chek_referred = User::where('username', $request->referred_by_username)->first();
+            $chek_referred = Users::where('username', $request->referred_by_username)->first();
             if (!empty($chek_referred)) {
                 $reward_new_user += $referred_reward_new_user;
                 $referred_by_userid = $chek_referred->id;
@@ -69,7 +69,7 @@ class AuthController extends Controller
             }
         }
 
-        User::create([
+        Users::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -78,7 +78,7 @@ class AuthController extends Controller
             'paid_resource' => $reward_new_user
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = Users::where('email', $request->email)->first();
 
         $position_x = rand(1, 11);
         $position_y = rand(1, 300);

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Modules;
-use App\Models\User;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ResourcesBuildings;
@@ -30,7 +30,7 @@ class HomeController extends Controller
             ), 400);
         }
 
-        $user = User::where('id', Auth::id())->first();
+        $user = Users::where('id', Auth::id())->first();
         $user->status = 'active';
         $user->save();
 

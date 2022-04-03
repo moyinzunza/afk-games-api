@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\ArmyGroups;
 use App\Models\UsersTechnologies;
 use App\Models\Modules;
-use App\Models\User;
+use App\Models\Users;
 use App\Models\ArmyLine;
 use App\Models\ArmyMovement;
 use App\Models\PushNotificationTokens;
@@ -23,7 +23,7 @@ class CronController extends Controller
     {
         //runs every minute
 
-        $users = User::where('status', 'active')->get();
+        $users = Users::where('status', 'active')->get();
         $config_resources = json_decode(ResourcesBuildings::get());
 
         foreach ($users as $user) {
@@ -58,7 +58,7 @@ class CronController extends Controller
     {
         $date = new DateTime();
         $date->modify("-7 day");
-        User::where('updated_at', '<', $date)->update([
+        Users::where('updated_at', '<', $date)->update([
             'status' => 'inactive'
         ]);
     }

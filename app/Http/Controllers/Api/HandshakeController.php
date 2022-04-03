@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+use App\Models\Users;
 use App\Models\PushNotificationTokens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +41,7 @@ class HandshakeController extends Controller
             ]);
         }
         
-        User::where('id', Auth::id())->update([
+        Users::where('id', Auth::id())->update([
             'status' => 'active'
         ]);
 
