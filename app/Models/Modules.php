@@ -20,6 +20,7 @@ class Modules extends Model
         'resources_3',
         'resources_building_lvl_1',
         'resources_building_lvl_2',
-        'resources_building_lvl_3'
+        'resources_building_lvl_3',
+        'image_url'
     ];
 }

@@ -27,7 +27,9 @@ class MapController extends Controller
             $user_data = Users::where('id', $module->user_id)->first();
             $module_info = array(
                 'id' => $module->id,
+                'image_url' => $module->image_url,
                 'name' => $module->name,
+                "positionPlanet" => $module->position_x,
                 'position' => array(
                     'galaxy' => $module->position_z,
                     'solar_system' => $module->position_y,

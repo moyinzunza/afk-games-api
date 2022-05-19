@@ -154,7 +154,7 @@ class DefenseController extends Controller
         $defense_config = Defense::get();
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer|between:1,' . count($defense_config),
-            'qty' => 'required|integer'
+            'qty' => 'required|integer|gt:0'
         ]);
 
         if ($validator->fails()) {

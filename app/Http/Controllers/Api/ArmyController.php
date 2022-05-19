@@ -156,7 +156,7 @@ class ArmyController extends Controller
         $army_config = Army::get();
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer|between:1,' . count($army_config),
-            'qty' => 'required|integer'
+            'qty' => 'required|integer|gt:0'
         ]);
 
         if ($validator->fails()) {

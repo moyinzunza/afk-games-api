@@ -7,18 +7,8 @@
 @section('content')
 <div class="universe__right__content__left__container">
   <div class="universe__right__content__left__container__first">
-    <img src="/images/cuadro.png" alt="bg" />
-    <div class="universe__right__content__left__container__first__content">
-      <div class="universe__right__content__left__container__first__content__img">
-      </div>
-      <div class="universe__right__content__left__container__first__content__text">
-      </div>
-    </div>
-    <div class="universe__right__content__left__container__first__popup">
-
-    </div>
-  </div>
-  <div class="universe__right__content__left__container__second resources">
+  
+    
   </div>
   <div class="universe__right__content__left__container__third">
     <div class="universe__right__content__left__container__third__section resources">

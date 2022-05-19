@@ -1,3 +1,4 @@
+
 'use strict';
 
 let removeSpaces = /^\s+$/;
@@ -68,16 +69,16 @@ function numberWithCommas(x) {
 }
 
 const calculeteResources = function (thisElement) {
+  $(`.btn.btn-create`).prop('disabled', false);
   let currQty = thisElement.val();
   let currMineral = thisElement.attr('data-mineral');
   let currCrystal = thisElement.attr('data-crystal');
-  let currFuel = thisElement.attr('data-fuel');
+  let currFuel = thisElement.attr('data-fuel')
   if (currQty > 0) {
     currMineral = thisElement.attr('data-mineral') * currQty;
     currCrystal = thisElement.attr('data-crystal') * currQty;
     currFuel = thisElement.attr('data-fuel') * currQty;
   }
-  $(`.btn.btn-create`).prop('disabled', false);
   let currMineralg = $(`.universe__right__content__right__classification__item__content__number[data-mineral]`).attr('data-mineral');
   let currCrystalg = $(`.universe__right__content__right__classification__item__content__number[data-crystal]`).attr('data-crystal');
   let currFuelg = $(`.universe__right__content__right__classification__item__content__number[data-fuel]`).attr('data-fuel');
@@ -131,6 +132,8 @@ const login = async function (thisElement) {
   }
   let currDataAwait = await getData('http://universe.artificialrevenge.com/api/login', 'POST', data, headers, $(thisElement))
   document.cookie = `access_token=${currDataAwait.result.access_token}; expires=${new Date(currDataAwait.result.expires_at)}; path=/`;
+  deleteCookie('cookie_current_module_id')
+  deleteCookie('cookie_current_coords')
   window.location.href = "/"
   $(thisElement) != '' ? $(thisElement).text(`${lastTextBtn}`) : ''
 }
@@ -143,6 +146,8 @@ const logout = async function () {
   }
   let currDataAwait = await getData('http://universe.artificialrevenge.com/api/logout', 'POST', '', headers, '')
   deleteCookie('access_token')
+  deleteCookie('cookie_current_module_id')
+  deleteCookie('cookie_current_coords')
   window.location.href = "/login"
 }
 
@@ -154,43 +159,52 @@ const getHome = async function () {
   }
   let cookieExist = getCookie("cookie_current_module_id");
   let currDataAwait;
-  if (cookieExist) {
+  
+  if (cookieExist.toString() !== `false`) {
     currDataAwait = await getData(`http://universe.artificialrevenge.com/api/home?module=${cookieExist}`, 'GET', '', headers, '');
   } else {
     currDataAwait = await getData('http://universe.artificialrevenge.com/api/home', 'GET', '', headers, '');
   }
+
   let defaultModuleID = currDataAwait.result.module.id;
+  let defaultCoords = `${currDataAwait.result.module.position.galaxy}.${currDataAwait.result.module.position.solar_system}.${currDataAwait.result.module.position.planet}`;
   let cookieModuleID = getCookie("cookie_current_module_id");
+  let cookieCoords = getCookie("cookie_current_coords");
   if (defaultModuleID === Number(cookieModuleID)) {
-    document.cookie = `cookie_current_module_id=${defaultModuleID}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
-  } else {
     document.cookie = `cookie_current_module_id=${cookieModuleID}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+    document.cookie = `cookie_current_coords=${cookieCoords}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+  } else {
+    document.cookie = `cookie_current_module_id=${defaultModuleID}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
+    document.cookie = `cookie_current_coords=${defaultCoords}; expires= Fri, 31 Dec 9999 23:59:59 GMT; path=/`;
   }
   let cookieModuleIDUpdate = getCookie("cookie_current_module_id");
-  $('.universe__right__content__left__container__first__content__text').text(currDataAwait.result.module.name);
-  $(`.universe__right__content__right__planets__item`).removeClass('active');
-  $(`.universe__right__content__right__planets__item[data-id=${cookieModuleIDUpdate}]`).addClass('active');
-  $('.universe__right__content__right__classification__items').html('')
-  Object.keys(currDataAwait.result.module.resources).forEach(function (k) {
-    let template = `
-          <div class="universe__right__content__right__classification__item">
-            <div class="universe__right__content__right__classification__item__image" style="background-image: url(${currDataAwait.result.module.resources[k].image});">
+  setTimeout(function(){
+    $('.universe__right__content__left__container__first__content__text').text(currDataAwait.result.module.name);
+    $(`.universe__right__content__right__planets__item`).removeClass('active');
+    $(`.universe__right__content__right__planets__item[data-id=${cookieModuleIDUpdate}]`).addClass('active');
+    $('.universe__right__content__right__classification__items').html('')
+    Object.keys(currDataAwait.result.module.resources).forEach(function (k) {
+      let template = `
+            <div class="universe__right__content__right__classification__item">
+              <div class="universe__right__content__right__classification__item__image" style="background-image: url(${currDataAwait.result.module.resources[k].image});">
+              </div>
+              <div class="universe__right__content__right__classification__item__content">
+                  <span class="universe__right__content__right__classification__item__content__number" 
+                    data-building-level="${currDataAwait.result.module.resources[k].building_level}" 
+                    data-generate-qty-minute="${Number(currDataAwait.result.module.resources[k].generate_qty_minute)}"
+                    data-${currDataAwait.result.module.resources[k].name.toLocaleUpperCase()}="${Number(currDataAwait.result.module.resources[k].qty)}"
+                    data-qty="${Number(currDataAwait.result.module.resources[k].qty)}"
+                    >
+                    ${numberWithCommas(Number(currDataAwait.result.module.resources[k].qty))}
+                  </span>
+                  <span>${currDataAwait.result.module.resources[k].name}</span>
+              </div>
             </div>
-            <div class="universe__right__content__right__classification__item__content">
-                <span class="universe__right__content__right__classification__item__content__number" 
-                  data-building-level="${currDataAwait.result.module.resources[k].building_level}" 
-                  data-generate-qty-minute="${Number(currDataAwait.result.module.resources[k].generate_qty_minute)}"
-                  data-${k.toLocaleUpperCase()}="${Number(currDataAwait.result.module.resources[k].qty)}"
-                  data-qty="${Number(currDataAwait.result.module.resources[k].qty)}"
-                  >
-                  ${numberWithCommas(Number(currDataAwait.result.module.resources[k].qty))}
-                </span>
-                <span>${currDataAwait.result.module.resources[k].name}</span>
-            </div>
-          </div>
-        `
-    $('.universe__right__content__right__classification__items').append(template)
-  });
+          `
+      $('.universe__right__content__right__classification__items').append(template)
+    });
+  }, 100);
+  
 }
 
 const getModules = async function () {
@@ -203,11 +217,12 @@ const getModules = async function () {
   $('.universe__right__content__right__planets__items').html('')
   Object.keys(currDataAwait.result).forEach(function (k) {
     let template = `
-            <div class="universe__right__content__right__planets__item" data-id="${currDataAwait.result[k].id}">
+            <div class="universe__right__content__right__planets__item" data-id="${currDataAwait.result[k].id}" 
+            data-coords="${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.solar_system}.${currDataAwait.result[k].position.planet}">
               <div class="universe__right__content__right__planets__item__image" style="background-image: url(/images/icon_3.svg);"></div>
               <div class="universe__right__content__right__planets__item__content">
                 <span>${currDataAwait.result[k].name}</span>
-                <span>(${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.planet}.${currDataAwait.result[k].position.solar_system})</span>
+                <span >(${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.solar_system}.${currDataAwait.result[k].position.planet})</span>
               </div>
             </div>
           `
@@ -419,15 +434,21 @@ const upgrade = async function (currID, thisElement) {
     "id": currID
   }
   if (thisElement.hasClass('btn-create')) {
+    let currQuantity = Number($('#create-quantity').val())
     data = {
       "id": currID,
-      "qty": Number($('#create-quantity').val())
+      "qty": currQuantity
+    }
+    if (currQuantity === 0 || currQuantity === '' || currQuantity === NaN || currQuantity === null) {
+      return false;
     }
   }
   let headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken} `
   }
+
+
   let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${getCurrUrl}`, 'POST', data, headers, '');
   thisElement.prop('disabled', true);
   location.reload();
@@ -439,6 +460,77 @@ const hideDetails = function () {
   $('.universe__right__content__left__container__first__popup').html('');
 }
 
+const getMaps = async function (typeEvent = `load`) {
+
+  if($(`.universe__right__content__left__container__first__content__ranges`).length > 0){
+    let cookieCoords = getCookie("cookie_current_coords");
+    let currModuleId = getCookie("cookie_current_module_id"); 
+    const arrCoords = cookieCoords.split(`.`);
+    let currToken = getCookie("access_token");
+    let headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currToken}`
+    }
+    let currDataAwait;
+    if(typeEvent === `update`){
+      console.log(`updates values cords`)
+      let position_z = Number($(".galaxiInput").val());
+      let position_y = Number($(".planetInput").val()); 
+      position_z = position_z === 0 ? 1 : position_z;
+      position_y = position_y === 0 ? 1 : position_y;
+      console.log(position_y, position_z)
+      currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${position_y}&position_z=${position_z}`, 'GET', '', headers, '');
+    }else{
+      currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${arrCoords[1]}&position_z=${arrCoords[0]}`, 'GET', '', headers, '');
+      $(`.galaxiRange, .galaxiInput`).val(arrCoords[0]);
+      $(`.planetRange, .planetInput`).val(arrCoords[1]);
+    }
+
+    let currTableBody = $(`.universe__right__content__left__container__table__content > table > tbody`);
+
+    currTableBody.html(``);
+
+    // currDataAwait.result.forEach(function(module, index){
+    //   module.positionPlanet = module.position.planet;
+    // })
+
+    let currArrayModules = [];
+    
+    for(let i = 1; i <= 11; i++){
+      let existPlanetPosition = currDataAwait.result.filter(function(objetPlanet){
+        return objetPlanet.positionPlanet === i;
+      })
+      if(existPlanetPosition.length > 0){
+        currArrayModules.push(existPlanetPosition)
+      }else{
+        currArrayModules.push({positionPlanet: i})
+      }
+    }
+    console.log(currArrayModules)
+    currArrayModules.forEach(function(module, index){
+      let currTemplateTr = `
+        <tr>
+          <td class="fullbg">${index + 1}</td>
+          <td class="${module?.[0]?.name ? `` : `notbg`}">${module?.[0]?.name ? module?.[0]?.name : ``}</td>
+          <td>${module?.[0]?.name ? module?.[0]?.name : `iconos`} </td>
+          <td class="${module?.[0]?.user_data.username ? `` : `notbg`}">${module?.[0]?.user_data.username ? module?.[0]?.user_data.username : ''}</td>
+          <td class="notbg">acciones</td>
+        </tr>
+      `;
+      currTableBody.append(currTemplateTr)
+    })  
+
+  }
+  
+}
+
+const validateMaxMinNumber = function(element, max, min){
+  let currValue = $(element).val()
+  let v = parseInt(currValue);
+  if (v < min) $(element).val(min);
+  if (v > max) $(element).val(max);
+}
+
 $(function () {
 
   getHome();
@@ -446,6 +538,8 @@ $(function () {
   updateResorces60seconds();
 
   getModules();
+
+  getMaps();
 
   if ($('.universe__right__content__left__container').hasClass('resources')) {
     let getCurrUrl = window.location.pathname.replace('/', '');
@@ -471,8 +565,11 @@ $(function () {
 
   $(document).on('click', '.universe__right__content__right__planets__item', function () {
     let currId = $(this).attr('data-id');
+    let currCoords = $(this).attr('data-coords');
     deleteCookie('cookie_current_module_id');
+    deleteCookie('cookie_current_coords');
     setCookie('cookie_current_module_id', currId, 3600);
+    setCookie('cookie_current_coords', currCoords, 3600);
     $(`.universe__right__content__right__planets__item`).removeClass('active');
     $(this).addClass('active');
     getHome();
@@ -481,6 +578,7 @@ $(function () {
       getModuleInfo(getCurrUrl);
     }
     hideDetails();
+    getMaps();
   })
 
   $(document).on('click', '.universe__right__content__left__container__second__img', function () {
@@ -503,5 +601,12 @@ $(function () {
   $(document).on('change', '#create-quantity', function () {
     calculeteResources($(this))
   })
+
+  $(document).on('click', '.universe__right__content__left__container__first__content__ranges > .btn', function (e) {
+    e.preventDefault();
+    getMaps(`update`)
+  })
+
+  
 
 })
