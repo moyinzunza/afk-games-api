@@ -11,14 +11,14 @@
     
     <div class="universe__right__content__left__container__first__content" style="z-index: 1;">
       <div class="universe__right__content__left__container__first__content__ranges">
-        <img src="/images/galaxy2.png" alt="Galaxy"/>
+        <img data-tippy-content="Universe" class="tippy" src="/images/galaxy2.png" alt="Galaxy"/>
         <form>
           <input type="range"  class="range galaxiRange" name="galaxiRange" min="1" max="5" value="1" oninput="this.form.galaxiInput.value=this.value" />
           <input type="number" name="galaxiInput" class="galaxiInput" min="1" max="5" value="1" onchange="validateMaxMinNumber(`.galaxiInput`, 5, 1)" oninput="this.form.galaxiRange.value=this.value" />
         </form>
       </div>
       <div class="universe__right__content__left__container__first__content__ranges">
-        <img src="/images/sistema-solar.png" alt="Planet"/>
+        <img data-tippy-content="Solar system" class="tippy" src="/images/sistema-solar.png" alt="Planet"/>
         <form>
           <input type="range" class="range planetRange" name="planetRange" min="1" max="250" value="1"  oninput="this.form.planetInput.value=this.value" />
           <input type="number" name="planetInput" class="planetInput" min="1" max="250" value="1" onchange="validateMaxMinNumber(`.planetInput`, 250, 1)" oninput="this.form.planetRange.value=this.value" />
@@ -35,10 +35,10 @@
             <th>
             </th>
             <th>
-              
+              Planet
             </th>
             <th>
-              Planet
+              Name
             </th>
             <th>
             Player
@@ -99,6 +99,11 @@
   $(function() {
     $(`.universe__left__menu > ul > li > a`).removeClass('active');
     $(`.universe__left__menu > ul > li > a[href='/galaxy']`).addClass('active');
+    tippy(`.tippy`, {
+      placement: 'top',
+      arrow: true,
+      theme: 'translucent',
+    });
   })
 </script>
 @endsection

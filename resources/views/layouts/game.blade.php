@@ -8,6 +8,10 @@
     <meta name="viewport" content="width=1080, initial-scale=1">
     <title>Universe</title>
     <meta charset="utf-8" />
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/tippy.js@6/dist/tippy.css"
+        />
     <link href="/css/styles.scss" rel="stylesheet" type="text/css" />
     @yield('styles')
 </head>
@@ -154,6 +158,8 @@
         </div>
     </div>
     <script src="/js/jquery.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="/js/jquery.countdown.min.js"></script>
     <script src="/js/scripts.js"></script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

@@ -19,6 +19,7 @@ class ModulesController extends Controller
             $module_info = array(
                 'id' => $module->id,
                 'name' => $module->name,
+                'image_url' => $module->image_url,
                 'construction_space' => $module->construction_space,
                 'position' => array(
                     'galaxy' => $module->position_z,

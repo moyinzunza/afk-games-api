@@ -219,7 +219,7 @@ const getModules = async function () {
     let template = `
             <div class="universe__right__content__right__planets__item" data-id="${currDataAwait.result[k].id}" 
             data-coords="${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.solar_system}.${currDataAwait.result[k].position.planet}">
-              <div class="universe__right__content__right__planets__item__image" style="background-image: url(/images/icon_3.svg);"></div>
+              <div class="universe__right__content__right__planets__item__image" style="background-image: url(${currDataAwait.result[k].image_url});"></div>
               <div class="universe__right__content__right__planets__item__content">
                 <span>${currDataAwait.result[k].name}</span>
                 <span >(${currDataAwait.result[k].position.galaxy}.${currDataAwait.result[k].position.solar_system}.${currDataAwait.result[k].position.planet})</span>
@@ -478,8 +478,8 @@ const getMaps = async function (typeEvent = `load`) {
       let position_y = Number($(".planetInput").val()); 
       position_z = position_z === 0 ? 1 : position_z;
       position_y = position_y === 0 ? 1 : position_y;
-      console.log(position_y, position_z)
       currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${position_y}&position_z=${position_z}`, 'GET', '', headers, '');
+      $('.universe__right__content__left__container__first__content__ranges > .btn').text(`Go!`);
     }else{
       currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${arrCoords[1]}&position_z=${arrCoords[0]}`, 'GET', '', headers, '');
       $(`.galaxiRange, .galaxiInput`).val(arrCoords[0]);
@@ -511,15 +511,25 @@ const getMaps = async function (typeEvent = `load`) {
       let currTemplateTr = `
         <tr>
           <td class="fullbg">${index + 1}</td>
-          <td class="${module?.[0]?.name ? `` : `notbg`}">${module?.[0]?.name ? module?.[0]?.name : ``}</td>
-          <td>${module?.[0]?.name ? module?.[0]?.name : `iconos`} </td>
+          <td class="notbg">${module?.[0]?.image_url ? `<img src="${module?.[0]?.image_url}" alt="planet" />` : ``}</td>
+          <td>${module?.[0]?.name ? module?.[0]?.name : `<img data-tippy-content="Colonize" class="icon tippy" src="/images/colonize.png" alt="colonize" />`} </td>
           <td class="${module?.[0]?.user_data.username ? `` : `notbg`}">${module?.[0]?.user_data.username ? module?.[0]?.user_data.username : ''}</td>
-          <td class="notbg">acciones</td>
+          <td class="${module?.[0]?.user_data.username ? `` : `notbg`}">
+          ${module?.[0]?.user_data.username ? 
+            `<img data-tippy-content="Attack" class="icon tippy" src="/images/attack.png" alt="attack" />
+             <img data-tippy-content="Transport" class="icon tippy" src="/images/transport.png" alt="transport" />
+             <img data-tippy-content="Deploy" class="icon tippy" src="/images/deploy.png" alt="deploy" />` 
+            : ``}
+            </td>
         </tr>
       `;
       currTableBody.append(currTemplateTr)
     })  
-
+    tippy(`.tippy`, {
+      placement: 'top',
+      arrow: true,
+      theme: 'translucent',
+    });
   }
   
 }
@@ -604,6 +614,7 @@ $(function () {
 
   $(document).on('click', '.universe__right__content__left__container__first__content__ranges > .btn', function (e) {
     e.preventDefault();
+    $('.universe__right__content__left__container__first__content__ranges > .btn').text(`Going...`);
     getMaps(`update`)
   })
 
