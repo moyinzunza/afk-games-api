@@ -241,29 +241,6 @@ class CronController extends Controller
                 //create notification
             }
 
-            if ($army_movement->type == 'spy') {
-                $module = Modules::where('id', $army_movement->module_id_destination)->first();
-
-                $start_at = new DateTime($army_movement->start_at);
-                $end_date = new DateTime($army_movement->finish_at);
-
-                $interval = $start_at->diff($end_date);
-                $diffInMinutes = $interval->days * 24 * 60;
-                $diffInMinutes += $interval->h * 60;
-                $diffInMinutes += $interval->i;
-
-                $finish_time = new DateTime($army_movement->finish_at);
-                $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
-
-                $army_movement->type = 'go_back';
-                $army_movement->start_at = $army_movement->finish_at;
-                $army_movement->finish_at = $finish_time;
-                $army_movement->save();
-                //create notification
-                //generate report
-            }
-
-
             if ($army_movement->type == 'colonize') {
                 //check if module exist, if exist go back
                 $module = Modules::where('position_x', $army_movement->position_x)->where('position_y', $army_movement->position_y)->where('position_z', $army_movement->position_z)->first();
@@ -307,11 +284,9 @@ class CronController extends Controller
                     $army_movement->delete();
                 }
                 //create notification
-                //generate report
             }
 
-
-            if ($army_movement->type == 'attack') {
+            if ($army_movement->type == 'spy') {
                 $module = Modules::where('id', $army_movement->module_id_destination)->first();
 
                 $start_at = new DateTime($army_movement->start_at);
@@ -324,6 +299,40 @@ class CronController extends Controller
 
                 $finish_time = new DateTime($army_movement->finish_at);
                 $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                $army_movement->type = 'go_back';
+                $army_movement->start_at = $army_movement->finish_at;
+                $army_movement->finish_at = $finish_time;
+                $army_movement->save();
+                //create notification
+                //generate report
+            }
+
+            if ($army_movement->type == 'attack') {
+
+                exit;
+
+                $module = Modules::where('id', $army_movement->module_id_destination)->first();
+
+                $tech_attack_destination = UsersTechnologies::where('user_id', $army_movement->user_id_destination)->where('technology_id', 4)->first();
+                $tech_attack_attacker = UsersTechnologies::where('user_id', $army_movement->user_id)->where('technology_id', 4)->first();
+
+                $tech_defense_destination = UsersTechnologies::where('user_id', $army_movement->user_id_destination)->where('technology_id', 5)->first();
+                $tech_defense_attacker = UsersTechnologies::where('user_id', $army_movement->user_id)->where('technology_id', 5)->first();
+
+
+                $start_at = new DateTime($army_movement->start_at);
+                $end_date = new DateTime($army_movement->finish_at);
+
+                $interval = $start_at->diff($end_date);
+                $diffInMinutes = $interval->days * 24 * 60;
+                $diffInMinutes += $interval->h * 60;
+                $diffInMinutes += $interval->i;
+
+                $finish_time = new DateTime($army_movement->finish_at);
+                $finish_time->add(new DateInterval('PT' . (int)($diffInMinutes) . 'M'));
+
+                //calculate battle remain units 
 
                 $army_movement->type = 'go_back';
                 $army_movement->start_at = $army_movement->finish_at;

@@ -65,8 +65,9 @@ class ArmyMovementController extends Controller
         }
         if (!empty($module_destination)) {
             $user_id_destination = $module_destination->user_id;
-            $module_id_destination = $module_destination->module_id;
+            $module_id_destination = $module_destination->id;
         }
+
         if (empty($module_destination) && $request->type == 'colonize') {
 
             $army_count = 0;
@@ -99,7 +100,7 @@ class ArmyMovementController extends Controller
                 );
                 return response()->json($data, 200);
             }
-        } else {
+        } else if ($request->type == 'colonize') {
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'Module exist cant colonize.'
@@ -119,6 +120,14 @@ class ArmyMovementController extends Controller
             $data['status'] = array(
                 'statusCode' => 400,
                 'message' => 'You cant attack your own modules.'
+            );
+            return response()->json($data, 200);
+        }
+
+        if ($request->type == 'attack' && $module_id_destination == 0) {
+            $data['status'] = array(
+                'statusCode' => 400,
+                'message' => "Module destination don't exist."
             );
             return response()->json($data, 200);
         }
