@@ -23,7 +23,7 @@ class ArmyController extends Controller
     public function get_module_army($module_id)
     {
 
-        $army_config = Army::get();
+        $army_config = Army::orderBy('atack_points', 'ASC')->get();
         $config_resources = json_decode(ResourcesBuildings::get());
 
         $module = Modules::where('id', $module_id)->where('user_id', Auth::id())->first();
@@ -130,7 +130,7 @@ class ArmyController extends Controller
             }
 
             $module_info = array(
-                'image' => 'http://www.igorstshirts.com/blog/conceptships/2017/juan_pablo_roldan/juan_pablo_roldan_01.jpg',
+                'image' => 'http://universe.artificialrevenge.com/assets/army/army_factory.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
