@@ -8,7 +8,10 @@ use App\Models\Modules;
 use App\Models\UpgradesLine;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\CalculatePricesTimeController;
+use App\Models\FacilitiesConditions;
 use App\Models\ResourcesBuildings;
+use App\Models\Technologies;
+use App\Models\UsersTechnologies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use DateInterval;
@@ -74,12 +77,52 @@ class FacilitiesController extends Controller
                     $user_facility = UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $facility->id)->first();
                 }
 
+
+                $conditions_array = array();
+                $conditions_arr = FacilitiesConditions::where('facility_id', $facility->id)->get();
+                $all_conditions_fullfilled = true;
+                foreach ($conditions_arr as $condition) {
+
+                    $name = "";
+                    $fulfilled = false;
+                    if ($condition->type == 'facility') {
+                        $facility_condition = Facilities::where('id', $condition->type_id)->first();
+                        $name = $facility_condition->name;
+                        $image = $facility_condition->image_url;
+                        if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
+                            $fulfilled = true;
+                        }
+                    } else if ($condition->type == 'technology') {
+                        $technologies = Technologies::where('id', $condition->type_id)->first();
+                        $name = $technologies->name;
+                        $image = $technologies->image_url;
+                        if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
+                            $fulfilled = true;
+                        }
+                    }
+
+                    if (!$fulfilled) {
+                        $all_conditions_fullfilled = false;
+                    }
+
+                    array_push($conditions_array, [
+                        'image' => $image,
+                        'type' => $condition->type,
+                        'level' => $condition->min_level,
+                        'name' => $name,
+                        'fulfilled' => $fulfilled
+                    ]);
+                }
+
+
                 $facility_arr = array(
                     'id' => $facility->id,
                     'name' => $facility->name,
                     'image' => $facility->image_url,
                     'level' => $user_facility->level,
-                    'price_time' => CalculatePricesTimeController::get_facility_single_price_time($facility->id, $user_facility->level+1)
+                    'price_time' => CalculatePricesTimeController::get_facility_single_price_time($facility->id, $user_facility->level+1),
+                    'all_conditions_fullfilled' => $all_conditions_fullfilled,
+                    'require' => $conditions_array
                 );
 
                 array_push($facilities_arr, $facility_arr);
@@ -149,10 +192,44 @@ class FacilitiesController extends Controller
         $price_resources_2 = $next_lvl_price[$config_resources[1]->name];
         $price_resources_3 = $next_lvl_price[$config_resources[2]->name];
 
+
+
+        //Conditions
+        $conditions_array = array();
+        $conditions_arr = FacilitiesConditions::where('facility_id', $request->id)->get();
+        foreach ($conditions_arr as $condition) {
+
+            $name = "";
+            $fulfilled = false;
+            if ($condition->type == 'facility') {
+                $name = Facilities::where('id', $condition->type_id)->first()->name;
+                if (!empty(UsersFacilities::where('module_id', $module_id)->where('user_id', Auth::id())->where('facility_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
+                    $fulfilled = true;
+                }
+            } else if ($condition->type == 'technology') {
+                $name = Technologies::where('id', $condition->type_id)->first()->name;
+                if (!empty(UsersTechnologies::where('user_id', Auth::id())->where('technology_id', $condition->type_id)->where('level', '>=', $condition->min_level)->first())) {
+                    $fulfilled = true;
+                }
+            }
+
+            if (!$fulfilled) {
+                array_push($conditions_array, [
+                    'type' => $condition->type,
+                    'level' => $condition->min_level,
+                    'name' => $name
+                ]);
+            }
+        }
+        //end conditions
+
+
+
         if (
             $price_resources_1 > $module->resources_1
             || $price_resources_2 > $module->resources_2
             || $price_resources_3 > $module->resources_3
+            || count($conditions_array) > 0
         ) {
             $data['status'] = array(
                 'statusCode' => 400,
