@@ -108,7 +108,7 @@ const register = async function (thisElement) {
   let headers = {
     'Content-Type': 'application/json'
   }
-  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/signup', 'POST', data, headers, $(thisElement))
+  let currDataAwait = await getData('https://universe.kaijumind.com/api/signup', 'POST', data, headers, $(thisElement))
   $(thisElement).prev().append(`<img src="/images/close.png" class="close-errors" />`);
   $(thisElement).prev().append(`<p class="success">${currDataAwait.status.message}</p>`);
   $('.universe-account-register input').val('');
@@ -130,7 +130,7 @@ const login = async function (thisElement) {
   let headers = {
     'Content-Type': 'application/json'
   }
-  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/login', 'POST', data, headers, $(thisElement))
+  let currDataAwait = await getData('https://universe.kaijumind.com/api/login', 'POST', data, headers, $(thisElement))
   document.cookie = `access_token=${currDataAwait.result.access_token}; expires=${new Date(currDataAwait.result.expires_at)}; path=/`;
   deleteCookie('cookie_current_module_id')
   deleteCookie('cookie_current_coords')
@@ -144,7 +144,7 @@ const logout = async function () {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/logout', 'POST', '', headers, '')
+  let currDataAwait = await getData('https://universe.kaijumind.com/api/logout', 'POST', '', headers, '')
   deleteCookie('access_token')
   deleteCookie('cookie_current_module_id')
   deleteCookie('cookie_current_coords')
@@ -161,9 +161,9 @@ const getHome = async function () {
   let currDataAwait;
   
   if (cookieExist.toString() !== `false`) {
-    currDataAwait = await getData(`http://universe.artificialrevenge.com/api/home?module=${cookieExist}`, 'GET', '', headers, '');
+    currDataAwait = await getData(`https://universe.kaijumind.com/api/home?module=${cookieExist}`, 'GET', '', headers, '');
   } else {
-    currDataAwait = await getData('http://universe.artificialrevenge.com/api/home', 'GET', '', headers, '');
+    currDataAwait = await getData('https://universe.kaijumind.com/api/home', 'GET', '', headers, '');
   }
 
   let defaultModuleID = currDataAwait.result.module.id;
@@ -213,7 +213,7 @@ const getModules = async function () {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  let currDataAwait = await getData('http://universe.artificialrevenge.com/api/get_modules', 'GET', '', headers, '')
+  let currDataAwait = await getData('https://universe.kaijumind.com/api/get_modules', 'GET', '', headers, '')
   $('.universe__right__content__right__planets__items').html('')
   Object.keys(currDataAwait.result).forEach(function (k) {
     let template = `
@@ -238,7 +238,7 @@ const getModuleInfo = async function (currUrl) {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${currToken}`
   }
-  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${currUrl}`, 'GET', '', headers, '')
+  let currDataAwait = await getData(`https://universe.kaijumind.com/api/module/${cookieModuleIDUpdate}/${currUrl}`, 'GET', '', headers, '')
   $('.universe__right__content__left__container__first__content__img').css('background-image', `url(${currDataAwait.result.image})`);
   $('.universe__right__content__left__container__second.resources').html('');
 
@@ -449,7 +449,7 @@ const upgrade = async function (currID, thisElement) {
   }
 
 
-  let currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${cookieModuleIDUpdate}/${getCurrUrl}`, 'POST', data, headers, '');
+  let currDataAwait = await getData(`https://universe.kaijumind.com/api/module/${cookieModuleIDUpdate}/${getCurrUrl}`, 'POST', data, headers, '');
   thisElement.prop('disabled', true);
   location.reload();
 }
@@ -478,10 +478,10 @@ const getMaps = async function (typeEvent = `load`) {
       let position_y = Number($(".planetInput").val()); 
       position_z = position_z === 0 ? 1 : position_z;
       position_y = position_y === 0 ? 1 : position_y;
-      currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${position_y}&position_z=${position_z}`, 'GET', '', headers, '');
+      currDataAwait = await getData(`https://universe.kaijumind.com/api/module/${currModuleId}/map?position_y=${position_y}&position_z=${position_z}`, 'GET', '', headers, '');
       $('.universe__right__content__left__container__first__content__ranges > .btn').text(`Go!`);
     }else{
-      currDataAwait = await getData(`http://universe.artificialrevenge.com/api/module/${currModuleId}/map?position_y=${arrCoords[1]}&position_z=${arrCoords[0]}`, 'GET', '', headers, '');
+      currDataAwait = await getData(`https://universe.kaijumind.com/api/module/${currModuleId}/map?position_y=${arrCoords[1]}&position_z=${arrCoords[0]}`, 'GET', '', headers, '');
       $(`.galaxiRange, .galaxiInput`).val(arrCoords[0]);
       $(`.planetRange, .planetInput`).val(arrCoords[1]);
     }

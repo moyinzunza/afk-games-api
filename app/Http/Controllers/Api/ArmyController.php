@@ -130,7 +130,7 @@ class ArmyController extends Controller
             }
 
             $module_info = array(
-                'image' => 'http://universe.artificialrevenge.com/assets/army/army_factory.jpg',
+                'image' => 'https://universe.kaijumind.com/assets/army/army_factory.jpg',
                 'id' => $module->id,
                 'name' => $module->name,
                 'resources' => array(
